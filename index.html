@@ -1,0 +1,2608 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="theme-color" content="#0a1628"/>
+<title>Virtutis Via</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Crimson+Pro:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
+
+<style>
+/* ============================================================
+   VIRTUTIS VIA — O Caminho da Virtude
+   Variáveis e Reset
+   ============================================================ */
+:root {
+  --azul-profundo:  #0a1628;
+  --azul-medio:     #0d1f35;
+  --azul-card:      #112235;
+  --azul-claro:     #1a3050;
+  --dourado:        #c9a84c;
+  --dourado-claro:  #e8d5a3;
+  --dourado-suave:  rgba(201,168,76,0.15);
+  --dourado-borda:  rgba(201,168,76,0.25);
+  --texto-sec:      #7a9ab8;
+  --texto-ter:      #4a6a88;
+  --urgente:        #8b2020;
+  --urgente-claro:  #ffaaaa;
+  --verde:          #1a5c3a;
+  --verde-claro:    #5de8a0;
+  --nav-h:          68px;
+  --hdr-h:          96px;
+  --font-titulo:    'Cinzel', serif;
+  --font-corpo:     'Crimson Pro', serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  background: var(--azul-profundo);
+  color: var(--dourado-claro);
+  font-family: var(--font-corpo);
+  font-size: 18px;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ============================================================
+   FLORES DE LIS — Fundo inspirado em São Luís IX
+   ============================================================ */
+#fundo-lis {
+  position: fixed;
+  inset: 0;
+  max-width: 480px;
+  margin: 0 auto;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+#fundo-lis canvas {
+  width: 100%;
+  height: 100%;
+  opacity: 0.13;
+}
+
+/* ============================================================
+   ESTRUTURA PRINCIPAL
+   ============================================================ */
+#app {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  max-width: 480px;
+  margin: 0 auto;
+  overflow: hidden;
+  z-index: 1;
+  background: transparent;
+}
+
+/* ============================================================
+   LEMBRETE PROGRAMADO
+   ============================================================ */
+#lembrete-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(5,10,20,.88);
+  z-index: 200;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  backdrop-filter: blur(6px);
+}
+#lembrete-overlay.aberto { display: flex; }
+.lembrete-box {
+  background: var(--azul-card);
+  border: 1px solid var(--dourado-borda);
+  border-radius: 24px;
+  padding: 28px 22px 22px;
+  width: 100%;
+  max-width: 360px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  position: relative;
+  overflow: hidden;
+  animation: lembreteEntrada .4s cubic-bezier(.2,1.2,.4,1);
+}
+@keyframes lembreteEntrada {
+  from { opacity: 0; transform: scale(.85); }
+  to   { opacity: 1; transform: scale(1); }
+}
+.lembrete-box::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, var(--dourado), transparent);
+}
+.lembrete-lis { font-size: 32px; color: var(--dourado); opacity: .85; }
+.lembrete-titulo {
+  font-family: var(--font-titulo);
+  font-size: 11px;
+  color: var(--texto-ter);
+  text-transform: uppercase;
+  letter-spacing: .18em;
+}
+.lembrete-hora { font-family: var(--font-titulo); font-size: 13px; color: var(--dourado); letter-spacing: .1em; }
+.lembrete-mensagem {
+  font-family: var(--font-corpo);
+  font-size: 18px;
+  color: var(--dourado-claro);
+  text-align: center;
+  line-height: 1.6;
+  font-style: italic;
+  border-top: 1px solid var(--dourado-borda);
+  border-bottom: 1px solid var(--dourado-borda);
+  padding: 14px 4px;
+  width: 100%;
+}
+.lembrete-fechar {
+  background: var(--dourado-suave);
+  border: 1px solid var(--dourado-borda);
+  border-radius: 12px;
+  padding: 10px 32px;
+  color: var(--dourado);
+  font-size: 14px;
+  font-family: var(--font-titulo);
+  letter-spacing: .08em;
+  cursor: pointer;
+  transition: background .2s;
+}
+.lembrete-fechar:hover { background: rgba(201,168,76,.25); }
+
+/* ============================================================
+   HEADER SUPERIOR
+   ============================================================ */
+#header {
+  background: var(--azul-profundo);
+  border-bottom: 1px solid var(--dourado-borda);
+  padding: env(safe-area-inset-top, 12px) 16px 0;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 10;
+}
+
+.header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 10px;
+}
+
+.btn-menu {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 6px;
+  border-radius: 8px;
+}
+.btn-menu span {
+  display: block;
+  height: 1.5px;
+  background: var(--dourado);
+  border-radius: 2px;
+  transition: all .3s;
+}
+.btn-menu span:nth-child(1) { width: 22px; }
+.btn-menu span:nth-child(2) { width: 15px; }
+.btn-menu span:nth-child(3) { width: 22px; }
+
+.header-brand {
+  text-align: center;
+  flex: 1;
+}
+.header-brand-nome {
+  font-family: var(--font-titulo);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--dourado);
+  letter-spacing: .2em;
+}
+.header-brand-sub {
+  font-family: var(--font-corpo);
+  font-size: 11px;
+  color: var(--texto-ter);
+  letter-spacing: .12em;
+  font-style: italic;
+  margin-top: 1px;
+}
+
+.btn-icone {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--dourado);
+  font-size: 22px;
+  padding: 6px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.header-pious {
+  font-size: 12px;
+  color: var(--texto-sec);
+  font-style: italic;
+  font-family: var(--font-corpo);
+  padding: 7px 4px 11px;
+  border-top: 1px solid var(--dourado-borda);
+  line-height: 1.4;
+  text-align: center;
+}
+
+/* ============================================================
+   ÁREA DE CONTEÚDO (SCROLL)
+   ============================================================ */
+.tela {
+  display: none;
+  flex-direction: column;
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 14px 14px calc(var(--nav-h) + 14px);
+  gap: 12px;
+  -webkit-overflow-scrolling: touch;
+}
+.tela.ativa { display: flex; }
+
+/* ============================================================
+   NAVEGAÇÃO INFERIOR
+   ============================================================ */
+#nav {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 480px;
+  background: #080f1c;
+  border-top: 1px solid var(--dourado-borda);
+  display: flex;
+  padding-bottom: env(safe-area-inset-bottom, 8px);
+  z-index: 20;
+}
+.nav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 10px 0 6px;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  color: var(--texto-ter);
+  transition: color .2s;
+}
+.nav-item i { font-size: 24px; transition: color .2s; }
+.nav-item span { font-size: 10px; font-family: var(--font-corpo); letter-spacing: .05em; }
+.nav-item.ativo { color: var(--dourado); }
+.nav-item.ativo i { color: var(--dourado); }
+
+/* ============================================================
+   COMPONENTES REUTILIZÁVEIS
+   ============================================================ */
+.secao-label {
+  font-family: var(--font-titulo);
+  font-size: 11px;
+  color: var(--texto-ter);
+  text-transform: uppercase;
+  letter-spacing: .15em;
+  padding: 0 2px;
+  margin-top: 4px;
+}
+
+.card {
+  background: var(--azul-card);
+  border: 1px solid var(--dourado-borda);
+  border-radius: 16px;
+  padding: 16px;
+}
+
+.card-hdr {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.card-titulo {
+  font-family: var(--font-titulo);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--dourado-claro);
+  letter-spacing: .06em;
+}
+.card-badge {
+  font-size: 12px;
+  color: var(--dourado);
+  background: var(--dourado-suave);
+  border-radius: 20px;
+  padding: 2px 10px;
+  font-family: var(--font-corpo);
+}
+
+.linha {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 0;
+  border-top: 1px solid rgba(255,255,255,.05);
+}
+.linha:first-of-type { border-top: none; }
+
+.chk {
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  border: 1.5px solid var(--dourado-borda);
+  flex-shrink: 0;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .2s;
+  background: transparent;
+}
+.chk:hover { border-color: var(--dourado); }
+.chk.feito { background: var(--dourado); border-color: var(--dourado); }
+.chk.feito::after { content: '✓'; font-size: 12px; color: var(--azul-profundo); font-weight: 700; }
+
+.txt-tarefa { font-size: 15px; color: var(--dourado-claro); flex: 1; line-height: 1.3; font-family: var(--font-corpo); }
+.txt-tarefa.feito { text-decoration: line-through; color: var(--texto-ter); }
+.txt-hora { font-size: 12px; color: var(--texto-ter); font-family: var(--font-corpo); }
+
+.tag-urgente {
+  font-size: 10px;
+  background: var(--urgente);
+  color: var(--urgente-claro);
+  border-radius: 6px;
+  padding: 2px 8px;
+  font-family: var(--font-corpo);
+  white-space: nowrap;
+}
+
+.barra-wrap {
+  flex: 1;
+  height: 5px;
+  background: rgba(255,255,255,.08);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.barra-fill { height: 100%; border-radius: 4px; background: var(--dourado); transition: width .3s; }
+.barra-fill.perigo { background: #c0392b; }
+
+.btn-primario {
+  width: 100%;
+  background: transparent;
+  border: 1px solid var(--dourado-borda);
+  border-radius: 12px;
+  padding: 11px;
+  color: var(--dourado);
+  font-size: 13px;
+  font-family: var(--font-corpo);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: background .2s;
+}
+.btn-primario:hover { background: var(--dourado-suave); }
+
+.btn-urgente {
+  background: var(--urgente);
+  border: none;
+  border-radius: 10px;
+  padding: 9px 14px;
+  color: var(--urgente-claro);
+  font-size: 12px;
+  font-family: var(--font-corpo);
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+input[type="text"], input[type="time"], select, textarea {
+  background: var(--azul-profundo);
+  border: 1px solid var(--dourado-borda);
+  border-radius: 10px;
+  padding: 9px 12px;
+  color: var(--dourado-claro);
+  font-size: 14px;
+  font-family: var(--font-corpo);
+  outline: none;
+  width: 100%;
+  transition: border-color .2s;
+}
+input[type="text"]:focus, input[type="time"]:focus, select:focus, textarea:focus {
+  border-color: var(--dourado);
+}
+input::placeholder, textarea::placeholder { color: var(--texto-ter); }
+select option { background: var(--azul-medio); color: var(--dourado-claro); }
+
+.toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.toggle-info { flex: 1; }
+.toggle-titulo { font-family: var(--font-titulo); font-size: 12px; color: var(--dourado-claro); letter-spacing: .04em; }
+.toggle-sub { font-size: 11px; color: var(--texto-sec); margin-top: 2px; font-family: var(--font-corpo); line-height: 1.4; }
+
+.toggle { position: relative; width: 46px; height: 26px; flex-shrink: 0; }
+.toggle input { opacity: 0; width: 0; height: 0; }
+.tslider {
+  position: absolute; cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: var(--azul-claro);
+  border-radius: 26px;
+  border: 1px solid var(--dourado-borda);
+  transition: .3s;
+}
+.tslider::before {
+  content: '';
+  position: absolute;
+  width: 20px; height: 20px;
+  left: 3px; top: 3px;
+  background: var(--texto-ter);
+  border-radius: 50%;
+  transition: .3s;
+}
+.toggle input:checked + .tslider { background: var(--dourado-suave); border-color: var(--dourado); }
+.toggle input:checked + .tslider::before { background: var(--dourado); transform: translateX(20px); }
+
+.dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.periodo-badge { font-size: 10px; padding: 3px 10px; border-radius: 20px; font-family: var(--font-corpo); white-space: nowrap; }
+.periodo-ativo { background: var(--verde); color: var(--verde-claro); }
+.periodo-breve { background: #2a1a0a; color: var(--dourado); }
+
+/* ============================================================
+   MENU LATERAL
+   ============================================================ */
+#overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.6);
+  z-index: 50;
+  display: none;
+  backdrop-filter: blur(2px);
+}
+#overlay.aberto { display: block; }
+
+#menu-lateral {
+  position: fixed;
+  top: 0; left: -100%;
+  width: min(300px, 82vw);
+  height: 100%;
+  background: #070d18;
+  border-right: 1px solid var(--dourado-borda);
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  transition: left .3s cubic-bezier(.4,0,.2,1);
+  overflow-y: auto;
+}
+#menu-lateral.aberto { left: 0; }
+
+.menu-topo {
+  padding: 48px 20px 16px;
+  border-bottom: 1px solid var(--dourado-borda);
+}
+.menu-cruz { font-size: 24px; color: var(--dourado); margin-bottom: 4px; }
+.menu-nome { font-family: var(--font-titulo); font-size: 14px; color: var(--dourado-claro); letter-spacing: .14em; }
+.menu-sub { font-size: 10px; color: var(--texto-ter); font-style: italic; letter-spacing: .1em; margin-top: 2px; }
+
+.menu-secao { padding: 12px 16px 4px; }
+.menu-secao-label { font-family: var(--font-titulo); font-size: 9px; color: var(--texto-ter); text-transform: uppercase; letter-spacing: .14em; margin-bottom: 6px; }
+
+.menu-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 0;
+  border-top: 1px solid rgba(255,255,255,.04);
+  cursor: pointer;
+}
+.menu-item:first-of-type { border-top: none; }
+.menu-icone { width: 32px; height: 32px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; }
+.menu-item-nome { font-size: 14px; color: var(--dourado-claro); font-family: var(--font-corpo); flex: 1; }
+.menu-item-desc { font-size: 11px; color: var(--texto-sec); font-family: var(--font-corpo); }
+.menu-tag { font-size: 10px; border-radius: 6px; padding: 2px 8px; font-family: var(--font-corpo); }
+.menu-tag-ativo { background: var(--verde); color: var(--verde-claro); }
+.menu-tag-breve { background: #1a1a3a; color: #8888cc; }
+
+.menu-fechar {
+  position: absolute; top: 14px; right: 14px;
+  background: transparent; border: none;
+  color: var(--texto-ter); font-size: 22px; cursor: pointer;
+}
+
+.menu-rodape { margin-top: auto; padding: 14px 16px; border-top: 1px solid var(--dourado-borda); }
+.menu-rodape-txt { font-size: 10px; color: var(--texto-ter); font-style: italic; text-align: center; line-height: 1.6; font-family: var(--font-corpo); }
+
+/* ============================================================
+   MODAL GENÉRICO
+   ============================================================ */
+.modal-fundo {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.7);
+  z-index: 80;
+  display: none;
+  align-items: flex-end;
+  backdrop-filter: blur(3px);
+}
+.modal-fundo.aberto { display: flex; }
+.modal-box {
+  background: var(--azul-card);
+  border: 1px solid var(--dourado-borda);
+  border-radius: 20px 20px 0 0;
+  padding: 20px 16px calc(env(safe-area-inset-bottom, 0px) + 20px);
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  animation: slideUp .25s ease;
+}
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+.modal-titulo { font-family: var(--font-titulo); font-size: 14px; color: var(--dourado); letter-spacing: .08em; margin-bottom: 2px; }
+.modal-fechar { background: transparent; border: none; color: var(--texto-ter); font-size: 22px; cursor: pointer; }
+
+/* ============================================================
+   TELA: INÍCIO
+   ============================================================ */
+.card-santo {
+  background: linear-gradient(135deg, var(--azul-card) 0%, #0f2540 100%);
+  border: 1px solid rgba(201,168,76,.4);
+  border-radius: 16px;
+  padding: 16px;
+  position: relative;
+  overflow: hidden;
+}
+.card-santo::before {
+  content: '✠';
+  position: absolute; top: -10px; right: 12px;
+  font-size: 80px;
+  color: rgba(201,168,76,.04);
+  pointer-events: none;
+  font-family: var(--font-titulo);
+}
+.santo-liturgia { font-size: 10px; color: var(--texto-ter); letter-spacing: .08em; text-transform: uppercase; font-family: var(--font-titulo); margin-bottom: 4px; }
+.santo-nome { font-family: var(--font-titulo); font-size: 15px; color: var(--dourado); margin-bottom: 10px; }
+.santo-versiculo {
+  font-size: 13px; color: var(--texto-sec); font-style: italic;
+  border-left: 2px solid var(--dourado);
+  padding-left: 10px; line-height: 1.6;
+  font-family: var(--font-corpo);
+}
+.santo-fonte { font-size: 10px; color: var(--texto-ter); margin-top: 4px; font-family: var(--font-corpo); }
+
+/* Banner modo missa ativo */
+.banner-missa {
+  background: #0a1a0a;
+  border: 1px solid var(--verde);
+  border-radius: 12px;
+  padding: 12px 14px;
+  display: flex; align-items: center; gap: 10px;
+}
+.banner-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--verde-claro); animation: pulsar 1.5s ease-in-out infinite; }
+@keyframes pulsar { 0%,100%{opacity:1;} 50%{opacity:.3;} }
+.banner-txt { flex: 1; }
+.banner-titulo { font-size: 12px; color: var(--verde-claro); font-family: var(--font-titulo); letter-spacing: .04em; }
+.banner-sub { font-size: 10px; color: var(--texto-sec); font-family: var(--font-corpo); margin-top: 1px; }
+
+/* ============================================================
+   TELA: TAREFAS
+   ============================================================ */
+.dias-nav {
+  display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px;
+  scrollbar-width: none;
+}
+.dias-nav::-webkit-scrollbar { display: none; }
+.dia-btn {
+  flex-shrink: 0;
+  background: var(--azul-card);
+  border: 1px solid var(--dourado-borda);
+  border-radius: 10px;
+  padding: 7px 14px;
+  color: var(--texto-sec);
+  font-size: 12px;
+  font-family: var(--font-corpo);
+  cursor: pointer;
+  transition: all .2s;
+}
+.dia-btn.ativo {
+  background: var(--dourado-suave);
+  border-color: var(--dourado);
+  color: var(--dourado);
+}
+
+/* ============================================================
+   TELA: GUARDA DOS OLHOS
+   ============================================================ */
+.app-row {
+  display: flex; align-items: center; gap: 10px; padding: 10px 0;
+  border-top: 1px solid rgba(255,255,255,.05);
+}
+.app-row:first-of-type { border-top: none; }
+.app-icone { width: 34px; height: 34px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: #fff; flex-shrink: 0; }
+.app-info { flex: 1; min-width: 0; }
+.app-nome { font-size: 13px; color: var(--dourado-claro); font-family: var(--font-corpo); }
+.app-limite { font-size: 10px; color: var(--texto-sec); font-family: var(--font-corpo); }
+.app-tempo { font-size: 11px; min-width: 32px; text-align: right; font-family: var(--font-corpo); }
+
+/* ============================================================
+   SELETOR DE TEMPO ESTILO ROLETA
+   ============================================================ */
+.roleta-wrap {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  justify-content: center;
+}
+.roleta-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.roleta-label {
+  font-size: 10px;
+  color: var(--texto-ter);
+  font-family: var(--font-titulo);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+.roleta-drum {
+  position: relative;
+  width: 72px;
+  height: 140px;
+  overflow: hidden;
+  border: 1px solid var(--dourado-borda);
+  border-radius: 12px;
+  background: var(--azul-profundo);
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.roleta-drum::before,
+.roleta-drum::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0;
+  height: 44px;
+  z-index: 2;
+  pointer-events: none;
+}
+.roleta-drum::before {
+  top: 0;
+  background: linear-gradient(to bottom, var(--azul-profundo) 0%, transparent 100%);
+}
+.roleta-drum::after {
+  bottom: 0;
+  background: linear-gradient(to top, var(--azul-profundo) 0%, transparent 100%);
+}
+.roleta-selector {
+  position: absolute;
+  top: 50%;
+  left: 4px; right: 4px;
+  transform: translateY(-50%);
+  height: 40px;
+  border: 1px solid var(--dourado);
+  border-radius: 8px;
+  background: var(--dourado-suave);
+  z-index: 1;
+  pointer-events: none;
+}
+.roleta-inner {
+  position: absolute;
+  width: 100%;
+  top: 0;
+  transition: transform .15s ease;
+}
+.roleta-item {
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-titulo);
+  font-size: 20px;
+  color: var(--texto-ter);
+  transition: color .15s, font-size .15s;
+  letter-spacing: .04em;
+}
+.roleta-item.selecionado {
+  color: var(--dourado);
+  font-size: 22px;
+}
+.roleta-sep {
+  font-family: var(--font-titulo);
+  font-size: 26px;
+  color: var(--dourado);
+  margin-top: 20px;
+  line-height: 1;
+}
+
+/* ============================================================
+   MODO PRETO E BRANCO
+   ============================================================ */
+.bw-item {
+  background: var(--azul-profundo);
+  border: 1px solid var(--dourado-borda);
+  border-radius: 12px;
+  padding: 12px;
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.bw-info { flex: 1; }
+.bw-nome { font-size: 13px; color: var(--dourado-claro); font-family: var(--font-corpo); }
+.bw-horario { font-size: 11px; color: var(--texto-ter); font-family: var(--font-corpo); margin-top: 2px; }
+
+/* Avisos de tempo */
+.aviso-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  background: var(--azul-profundo);
+  border: 1px solid var(--dourado-borda);
+  border-radius: 10px;
+  margin-top: 6px;
+}
+.aviso-tempo-badge {
+  font-size: 11px;
+  background: var(--dourado-suave);
+  color: var(--dourado);
+  border-radius: 8px;
+  padding: 2px 8px;
+  font-family: var(--font-titulo);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.aviso-msg-txt {
+  font-size: 13px;
+  color: var(--texto-sec);
+  font-family: var(--font-corpo);
+  flex: 1;
+  font-style: italic;
+  line-height: 1.3;
+}
+
+/* ============================================================
+   TELA: MODO MISSA
+   ============================================================ */
+.missa-item {
+  background: var(--azul-profundo);
+  border: 1px solid var(--dourado-borda);
+  border-radius: 12px;
+  padding: 12px;
+  display: flex; align-items: center; gap: 10px;
+  margin-top: 8px;
+}
+.missa-item.padrao { border-color: rgba(201,168,76,.5); }
+.missa-dia { font-size: 11px; font-weight: 500; color: var(--dourado); background: var(--dourado-suave); border-radius: 8px; padding: 3px 10px; white-space: nowrap; font-family: var(--font-titulo); letter-spacing: .04em; }
+.missa-hora { font-size: 14px; color: var(--dourado-claro); font-family: var(--font-corpo); }
+.missa-nome-item { font-size: 10px; color: var(--texto-sec); font-family: var(--font-corpo); }
+.missa-acoes { display: flex; gap: 6px; margin-left: auto; }
+.missa-btn-acao { background: transparent; border: none; font-size: 18px; cursor: pointer; padding: 2px; }
+
+/* ============================================================
+   TELA: PORTAIS
+   ============================================================ */
+.porticos-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+.portal-item {
+  background: var(--azul-card);
+  border: 1px solid var(--dourado-borda);
+  border-radius: 14px;
+  padding: 14px 10px;
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: border-color .2s, background .2s;
+}
+.portal-item:hover { border-color: var(--dourado); background: var(--dourado-suave); }
+.portal-icone { width: 40px; height: 40px; border-radius: 11px; display: flex; align-items: center; justify-content: center; font-size: 20px; border: 1px solid var(--dourado-borda); background: var(--azul-profundo); }
+.portal-nome { font-size: 12px; color: var(--dourado-claro); text-align: center; font-family: var(--font-titulo); letter-spacing: .04em; }
+.portal-url { font-size: 9px; color: var(--texto-ter); text-align: center; font-family: var(--font-corpo); }
+.portal-add {
+  background: transparent;
+  border: 1px dashed var(--dourado-borda);
+  border-radius: 14px;
+  padding: 14px 10px;
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  cursor: pointer;
+}
+.portal-add-icone { width: 40px; height: 40px; border-radius: 11px; border: 1px dashed var(--dourado-borda); display: flex; align-items: center; justify-content: center; color: var(--texto-ter); font-size: 20px; }
+.portal-add-txt { font-size: 11px; color: var(--texto-ter); font-family: var(--font-corpo); }
+
+/* Botão Porta Vaticana */
+.card-vaticano {
+  background: #0a0d18;
+  border: 1px solid rgba(212,168,67,.3);
+  border-radius: 16px;
+  padding: 14px;
+  display: flex; align-items: center; gap: 12px;
+  cursor: pointer;
+  transition: background .2s;
+}
+.card-vaticano:hover { background: #0d1020; }
+.vat-simbolo { font-size: 26px; flex-shrink: 0; }
+.vat-info { flex: 1; }
+.vat-nome { font-family: var(--font-titulo); font-size: 13px; color: #d4a843; letter-spacing: .1em; }
+.vat-desc { font-size: 11px; color: #8b7340; font-family: var(--font-corpo); margin-top: 2px; line-height: 1.4; }
+.vat-seta { color: #d4a84366; font-size: 20px; }
+
+/* ============================================================
+   TELA: PORTA VATICANA
+   ============================================================ */
+#tela-vaticano {
+  background: #050810;
+  position: relative;
+}
+.vat-header {
+  background: #050810;
+  border-bottom: 1px solid #8b734044;
+  padding: 16px;
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  flex-shrink: 0;
+}
+.vat-cruz-grande { font-size: 30px; color: #d4a843; }
+.vat-titulo-pg { font-family: var(--font-titulo); font-size: 16px; color: #e8d5a3; letter-spacing: .18em; }
+.vat-subtitulo-pg { font-size: 10px; color: #8b7340; letter-spacing: .14em; font-style: italic; }
+
+/* ============================================================
+   ANIMAÇÕES GERAIS
+   ============================================================ */
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+.tela.ativa > * { animation: fadeIn .25s ease forwards; }
+.tela.ativa > *:nth-child(2) { animation-delay: .04s; }
+.tela.ativa > *:nth-child(3) { animation-delay: .08s; }
+.tela.ativa > *:nth-child(4) { animation-delay: .12s; }
+.tela.ativa > *:nth-child(5) { animation-delay: .16s; }
+
+/* Scrollbar customizada */
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--dourado-borda); border-radius: 3px; }
+</style>
+</head>
+<body>
+<!-- FUNDO FLORES DE LIS -->
+<div id="fundo-lis"></div>
+
+<!-- LEMBRETE PROGRAMADO -->
+<div id="lembrete-overlay">
+  <div class="lembrete-box">
+    <div class="lembrete-lis">⚜</div>
+    <div class="lembrete-titulo">Lembrete</div>
+    <div class="lembrete-hora" id="lembrete-hora-exib">—</div>
+    <div class="lembrete-mensagem" id="lembrete-msg-exib">—</div>
+    <button class="lembrete-fechar" onclick="fecharLembrete()">Amém · Entendido</button>
+  </div>
+</div>
+
+<div id="app">
+
+  <!-- ==================== HEADER ==================== -->
+  <div id="header">
+    <div class="header-top">
+      <button class="btn-menu" onclick="abrirMenu()" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+      <div class="header-brand">
+        <div class="header-brand-nome">VIRTUTIS VIA</div>
+        <div class="header-brand-sub">O Caminho da Virtude</div>
+      </div>
+      <button class="btn-icone" onclick="abrirNotificacoes()" aria-label="Notificações">
+        <i class="ti ti-bell"></i>
+      </button>
+    </div>
+    <div class="header-pious" id="frase-aba">"Age quod agis" — faze com perfeição o que fazes agora, oferecendo cada momento ao Senhor.</div>
+  </div>
+
+  <!-- ==================== TELA: INÍCIO ==================== -->
+  <div class="tela ativa" id="tela-inicio">
+
+    <div class="card-santo">
+      <div class="santo-liturgia" id="info-liturgia">Carregando...</div>
+      <div class="santo-nome" id="santo-nome">✠ —</div>
+      <div class="santo-versiculo" id="versiculo-dia">"Tudo o que fizerdes, fazei de todo o coração, como para o Senhor." — Col 3,23</div>
+    </div>
+
+    <div id="banner-missa" class="banner-missa" style="display:none;">
+      <div class="banner-dot"></div>
+      <div class="banner-txt">
+        <div class="banner-titulo">✠ Modo Missa Ativo</div>
+        <div class="banner-sub" id="banner-missa-txt">Celular silenciado até às —</div>
+      </div>
+    </div>
+
+    <div class="secao-label">Tarefa urgente</div>
+    <div id="urgentes-inicio"></div>
+
+    <div class="secao-label">Tarefas de hoje</div>
+    <div class="card">
+      <div class="card-hdr">
+        <span class="card-titulo">Plano do dia</span>
+        <span class="card-badge" id="badge-hoje">0 de 0</span>
+      </div>
+      <div id="lista-hoje"></div>
+    </div>
+
+    <div class="secao-label">Tempo restante — aplicativos</div>
+    <div class="card" id="card-tempos-inicio"></div>
+
+    <div class="secao-label">Período atual</div>
+    <div class="card" id="card-periodo-inicio">
+      <div style="font-size:13px;color:var(--texto-sec);font-family:var(--font-corpo);">Nenhum período configurado ainda.</div>
+    </div>
+
+  </div>
+
+  <!-- ==================== TELA: TAREFAS ==================== -->
+  <div class="tela" id="tela-tarefas">
+
+    <!-- Tarefa rápida -->
+    <div class="card" style="border-color: rgba(139,32,32,.6);">
+      <div style="font-size:11px;color:var(--urgente-claro);margin-bottom:8px;font-family:var(--font-corpo);">Tarefa rápida — urgente ou única, aparece destacada</div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <input type="text" id="input-urgente" placeholder="Descreva a tarefa urgente..." style="flex:1;"/>
+        <button class="btn-urgente" onclick="adicionarUrgente()">+ Urgente</button>
+      </div>
+    </div>
+
+    <!-- Navegação por dias -->
+    <div class="dias-nav" id="dias-nav"></div>
+
+    <!-- Lista de tarefas do dia selecionado -->
+    <div class="card">
+      <div class="card-hdr">
+        <span class="card-titulo" id="titulo-dia-sel">Segunda-feira</span>
+        <button class="btn-icone" style="font-size:20px;" onclick="abrirModalTarefa()"><i class="ti ti-plus"></i></button>
+      </div>
+      <div id="lista-dia-sel">
+        <div style="font-size:13px;color:var(--texto-sec);padding:8px 0;font-family:var(--font-corpo);">Nenhuma tarefa para este dia. Toque em + para adicionar.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ==================== TELA: GUARDA DOS OLHOS ==================== -->
+  <div class="tela" id="tela-tempos">
+
+    <div class="card">
+      <div class="toggle-row">
+        <div class="toggle-info">
+          <div class="toggle-titulo">Guarda dos Olhos</div>
+          <div class="toggle-sub">Monitorar e limitar o tempo nos aplicativos</div>
+        </div>
+        <label class="toggle">
+          <input type="checkbox" id="toggle-guarda" checked onchange="salvarConfig()"/>
+          <span class="tslider"></span>
+        </label>
+      </div>
+    </div>
+
+    <div class="secao-label">Aplicativos monitorados</div>
+    <div class="card">
+      <div id="lista-apps"></div>
+      <div style="height:10px;"></div>
+      <button class="btn-primario" onclick="abrirModalApp()">
+        <i class="ti ti-plus" style="font-size:16px;"></i> Adicionar aplicativo
+      </button>
+    </div>
+
+    <div class="secao-label">Períodos do dia</div>
+    <div class="card">
+      <div id="lista-periodos"></div>
+      <div style="height:10px;"></div>
+      <button class="btn-primario" onclick="abrirModalPeriodo()">
+        <i class="ti ti-plus" style="font-size:16px;"></i> Adicionar período
+      </button>
+    </div>
+
+    <div class="secao-label">Avisos de tempo por aplicativo</div>
+    <div class="card">
+      <div style="font-size:13px;color:var(--texto-sec);line-height:1.5;margin-bottom:12px;font-family:var(--font-corpo);">
+        Configure alertas que aparecem na tela enquanto o senhor usa um aplicativo — para não se perder no tempo.
+      </div>
+
+      <div>
+        <div style="font-size:11px;color:var(--texto-ter);margin-bottom:4px;font-family:var(--font-corpo);">Aplicativo</div>
+        <select id="aviso-app-sel" style="width:100%;"></select>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;">
+        <div>
+          <div style="font-size:11px;color:var(--texto-ter);margin-bottom:4px;font-family:var(--font-corpo);">Quando avisar</div>
+          <select id="aviso-tipo-sel">
+            <option value="decorrido">Após X minutos de uso</option>
+            <option value="faltando">Quando faltar X minutos</option>
+          </select>
+        </div>
+        <div>
+          <div style="font-size:11px;color:var(--texto-ter);margin-bottom:4px;font-family:var(--font-corpo);">Minutos</div>
+          <input type="text" id="aviso-minutos" placeholder="Ex: 10"/>
+        </div>
+      </div>
+      <div style="margin-top:10px;">
+        <div style="font-size:11px;color:var(--texto-ter);margin-bottom:4px;font-family:var(--font-corpo);">Mensagem personalizada (opcional)</div>
+        <input type="text" id="aviso-msg" placeholder='Ex: "Estás a usar este tempo com sabedoria?"'/>
+      </div>
+      <button class="btn-primario" onclick="salvarAvisoTempo()" style="margin-top:10px;">
+        <i class="ti ti-plus" style="font-size:16px;"></i> Adicionar aviso
+      </button>
+
+      <div id="lista-avisos-tempo" style="margin-top:10px;"></div>
+    </div>
+
+    <div class="secao-label">Modo preto e branco</div>
+    <div class="card">
+      <div style="font-size:13px;color:var(--texto-sec);line-height:1.6;margin-bottom:12px;font-family:var(--font-corpo);">
+        A tela em preto e branco gera menos estímulo visual e ajuda a usar o celular com mais sobriedade. Programe os períodos em que deseja ativá-lo.
+      </div>
+      <div style="background:var(--azul-profundo);border:1px solid var(--dourado-borda);border-radius:12px;padding:12px;margin-bottom:10px;">
+        <div style="font-size:11px;color:var(--texto-ter);margin-bottom:10px;font-family:var(--font-corpo);">Horário de início</div>
+        <div id="roleta-pb-inicio" class="roleta-wrap"></div>
+        <div style="font-size:11px;color:var(--texto-ter);margin:12px 0 10px;font-family:var(--font-corpo);">Horário de fim</div>
+        <div id="roleta-pb-fim" class="roleta-wrap"></div>
+        <div style="display:flex;align-items:center;gap:10px;margin-top:12px;">
+          <label class="toggle"><input type="checkbox" id="pb-dia-seguinte"/><span class="tslider"></span></label>
+          <span style="font-size:13px;color:var(--texto-sec);font-family:var(--font-corpo);">Termina no dia seguinte</span>
+        </div>
+        <button class="btn-primario" onclick="salvarPeriodoPB()" style="margin-top:12px;">
+          <i class="ti ti-plus" style="font-size:16px;"></i> Adicionar período PB
+        </button>
+      </div>
+      <div id="lista-periodos-pb">
+        <div style="font-size:13px;color:var(--texto-sec);font-family:var(--font-corpo);">Nenhum período configurado.</div>
+      </div>
+      <div style="background:var(--azul-card);border:1px solid var(--dourado-borda);border-radius:10px;padding:10px;margin-top:10px;">
+        <div style="font-size:11px;color:var(--texto-ter);font-family:var(--font-corpo);line-height:1.6;">
+          <i class="ti ti-info-circle" style="font-size:14px;vertical-align:-2px;margin-right:4px;color:var(--dourado);"></i>
+          O modo preto e branco usa o filtro de cores nativo do celular. Em iOS: Configurações → Acessibilidade → Tamanho do Texto e Visualização → Filtros de Cor. Em Android: Configurações → Bem-estar Digital → Modo de Tonalidade de Cinza. O aplicativo exibirá o lembrete de ativá-lo no horário programado.
+        </div>
+      </div>
+    </div>
+
+    <div class="secao-label">Destravar aplicativo pausado</div>
+    <div class="card">
+      <div style="font-size:13px;color:var(--texto-sec);line-height:1.5;margin-bottom:10px;font-family:var(--font-corpo);">Precisa de mais tempo por necessidade real? A senha garante um momento de reflexão.</div>
+      <button class="btn-primario" onclick="destravarmApp()">
+        <i class="ti ti-lock" style="font-size:16px;"></i> Destravar com senha
+      </button>
+    </div>
+
+  </div>
+
+  <!-- ==================== TELA: MODO MISSA ==================== -->
+  <div class="tela" id="tela-missa">
+
+    <div class="card" style="border-color:rgba(201,168,76,.5);">
+      <div class="toggle-row">
+        <div class="toggle-info">
+          <div class="toggle-titulo">✠ Modo Missa</div>
+          <div class="toggle-sub">Silencia o celular automaticamente nos horários da Santa Missa</div>
+        </div>
+        <label class="toggle">
+          <input type="checkbox" id="toggle-missa" checked onchange="salvarConfig()"/>
+          <span class="tslider"></span>
+        </label>
+      </div>
+    </div>
+
+    <div id="banner-proxima-missa" class="banner-missa" style="display:none;margin-top:0;">
+      <div class="banner-dot"></div>
+      <div class="banner-txt">
+        <div class="banner-titulo">Próxima Missa</div>
+        <div class="banner-sub" id="txt-proxima-missa">—</div>
+      </div>
+    </div>
+
+    <div class="secao-label">Missas configuradas (padrão — Domingo)</div>
+    <div class="card" id="card-missas-padrao">
+      <div style="font-size:11px;color:var(--texto-ter);margin-bottom:10px;font-family:var(--font-corpo);line-height:1.5;">Pré-configuradas. Podem ser editadas ou removidas a qualquer momento.</div>
+      <div id="lista-missas-padrao"></div>
+    </div>
+
+    <div class="secao-label">Outras missas</div>
+    <div class="card">
+      <div id="lista-missas-outras"></div>
+      <div style="height:8px;"></div>
+      <button class="btn-primario" onclick="abrirModalMissa()">
+        <i class="ti ti-plus" style="font-size:16px;"></i> Adicionar horário de Missa
+      </button>
+    </div>
+
+    <div class="secao-label">O Modo Missa</div>
+    <div class="card">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <div style="background:var(--azul-profundo);border:1px solid var(--dourado-borda);border-radius:10px;padding:10px;display:flex;align-items:center;gap:8px;">
+          <i class="ti ti-volume-off" style="color:var(--dourado);font-size:18px;"></i>
+          <span style="font-size:12px;color:var(--texto-sec);font-family:var(--font-corpo);">Silencia o som</span>
+        </div>
+        <div style="background:var(--azul-profundo);border:1px solid var(--dourado-borda);border-radius:10px;padding:10px;display:flex;align-items:center;gap:8px;">
+          <i class="ti ti-bell-off" style="color:var(--dourado);font-size:18px;"></i>
+          <span style="font-size:12px;color:var(--texto-sec);font-family:var(--font-corpo);">Não perturbe</span>
+        </div>
+        <div style="background:var(--azul-profundo);border:1px solid var(--dourado-borda);border-radius:10px;padding:10px;display:flex;align-items:center;gap:8px;">
+          <i class="ti ti-phone-off" style="color:var(--dourado);font-size:18px;"></i>
+          <span style="font-size:12px;color:var(--texto-sec);font-family:var(--font-corpo);">Sem vibração</span>
+        </div>
+        <div style="background:var(--azul-profundo);border:1px solid var(--dourado-borda);border-radius:10px;padding:10px;display:flex;align-items:center;gap:8px;">
+          <i class="ti ti-refresh" style="color:var(--dourado);font-size:18px;"></i>
+          <span style="font-size:12px;color:var(--texto-sec);font-family:var(--font-corpo);">Volta sozinho</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ==================== TELA: PORTAIS ==================== -->
+  <div class="tela" id="tela-porticos">
+
+    <div class="card-vaticano" onclick="irPara('vaticano')">
+      <div class="vat-simbolo">⚜</div>
+      <div class="vat-info">
+        <div class="vat-nome">Porta Vaticana</div>
+        <div class="vat-desc">Sites oficiais e documentos da Santa Sé organizados em um só lugar</div>
+      </div>
+      <i class="ti ti-chevron-right vat-seta"></i>
+    </div>
+
+    <div class="secao-label">Meus porticos</div>
+    <div id="porticos-categorias"></div>
+    <button class="btn-primario" onclick="abrirModalPortal()" style="margin-top:4px;">
+      <i class="ti ti-plus" style="font-size:16px;"></i> Adicionar portal
+    </button>
+
+  </div>
+
+  <!-- ==================== TELA: PORTA VATICANA ==================== -->
+  <div class="tela" id="tela-vaticano" style="padding-top:0;">
+
+    <div class="vat-header" style="margin:0 -14px;width:calc(100% + 28px);">
+      <div class="vat-cruz-grande">✠</div>
+      <div class="vat-titulo-pg">Porta Vaticana</div>
+      <div class="vat-subtitulo-pg">Sancta Sedes · Roma Aeterna</div>
+    </div>
+
+    <div style="margin-top:4px;"></div>
+
+    <div class="card" style="background:#0d1020;border-color:#8b734044;">
+      <div style="font-size:10px;color:#d4a843;letter-spacing:.1em;text-transform:uppercase;font-family:var(--font-titulo);margin-bottom:6px;">Documento do dia</div>
+      <div style="font-size:13px;color:#a0b4c8;font-style:italic;border-left:2px solid #d4a84355;padding-left:10px;line-height:1.6;font-family:var(--font-corpo);">"A Igreja existe para evangelizar, ou seja, para pregar e ensinar, para ser canal do dom da graça." — Paulo VI</div>
+      <div style="font-size:10px;color:#8b7340;margin-top:6px;font-family:var(--font-corpo);">Evangelii Nuntiandi, 14 · 1975</div>
+    </div>
+
+    <div class="secao-label" style="color:#8b7340;">Sites oficiais da Santa Sé</div>
+    <div class="porticos-grid">
+      <a href="https://www.vatican.va" target="_blank" class="portal-item" style="background:#0d1020;border-color:#8b734044;">
+        <div class="portal-icone" style="background:#07090f;">✠</div>
+        <div class="portal-nome" style="color:#e8d5a3;">Santa Sé</div>
+        <div class="portal-url" style="color:#8b7340;">vatican.va</div>
+      </a>
+      <a href="https://www.vaticannews.va/pt.html" target="_blank" class="portal-item" style="background:#0d1020;border-color:#8b734044;">
+        <div class="portal-icone" style="background:#07090f;">📰</div>
+        <div class="portal-nome" style="color:#e8d5a3;">Vatican News</div>
+        <div class="portal-url" style="color:#8b7340;">vaticannews.va</div>
+      </a>
+      <a href="https://www.vatican.va/content/vatican/pt/encyclicals.index.html" target="_blank" class="portal-item" style="background:#0d1020;border-color:#8b734044;">
+        <div class="portal-icone" style="background:#07090f;">📜</div>
+        <div class="portal-nome" style="color:#e8d5a3;">Encíclicas</div>
+        <div class="portal-url" style="color:#8b7340;">Documentos papais</div>
+      </a>
+      <a href="https://www.museivaticani.va" target="_blank" class="portal-item" style="background:#0d1020;border-color:#8b734044;">
+        <div class="portal-icone" style="background:#07090f;">🏛</div>
+        <div class="portal-nome" style="color:#e8d5a3;">Museus Vaticanos</div>
+        <div class="portal-url" style="color:#8b7340;">museivaticani.va</div>
+      </a>
+    </div>
+
+    <div class="secao-label" style="color:#8b7340;">Magistério e doutrina</div>
+    <div class="porticos-grid">
+      <a href="https://www.vatican.va/archive/cathechism_po/index_po.htm" target="_blank" class="portal-item" style="background:#0d1020;border-color:#8b734044;">
+        <div class="portal-icone" style="background:#07090f;">📖</div>
+        <div class="portal-nome" style="color:#e8d5a3;">Catecismo</div>
+        <div class="portal-url" style="color:#8b7340;">CIC em português</div>
+      </a>
+      <a href="https://www.vatican.va/archive/cod-iuris-canonici/portuguese/codex-iuris-canonici_po.pdf" target="_blank" class="portal-item" style="background:#0d1020;border-color:#8b734044;">
+        <div class="portal-icone" style="background:#07090f;">⚖</div>
+        <div class="portal-nome" style="color:#e8d5a3;">Direito Canônico</div>
+        <div class="portal-url" style="color:#8b7340;">Código oficial</div>
+      </a>
+      <a href="https://www.vaticannews.va/pt/podcast.html" target="_blank" class="portal-item" style="background:#0d1020;border-color:#8b734044;">
+        <div class="portal-icone" style="background:#07090f;">📡</div>
+        <div class="portal-nome" style="color:#e8d5a3;">Rádio Vaticano</div>
+        <div class="portal-url" style="color:#8b7340;">Transmissão ao vivo</div>
+      </a>
+      <a href="https://www.vatican.va/archive/hist_councils/ii_vatican_council/index_po.htm" target="_blank" class="portal-item" style="background:#0d1020;border-color:#8b734044;">
+        <div class="portal-icone" style="background:#07090f;">🕊</div>
+        <div class="portal-nome" style="color:#e8d5a3;">Conc. Vaticano II</div>
+        <div class="portal-url" style="color:#8b7340;">Documentos conciliares</div>
+      </a>
+    </div>
+
+    <button class="btn-primario" onclick="irPara('porticos')" style="margin-top:4px;border-color:#8b734066;color:#8b7340;">
+      <i class="ti ti-arrow-left" style="font-size:16px;"></i> Regressar aos Pórticos
+    </button>
+
+  </div>
+
+  <!-- ==================== TELA: LEMBRETES ==================== -->
+  <div class="tela" id="tela-lembretes">
+
+    <div class="card" style="border-color:rgba(201,168,76,.5);">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+        <div style="font-size:22px;">⚜</div>
+        <div>
+          <div style="font-family:var(--font-titulo);font-size:13px;color:var(--dourado);letter-spacing:.06em;">Lembretes programados</div>
+          <div style="font-size:12px;color:var(--texto-sec);font-family:var(--font-corpo);margin-top:2px;">Uma mensagem aparece na tela no dia e hora definidos</div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div>
+          <div style="font-size:11px;color:var(--texto-ter);margin-bottom:4px;font-family:var(--font-corpo);">Mensagem</div>
+          <textarea id="novo-lembrete-msg" placeholder="Ex: Ir à confissão esta semana..." rows="2" style="resize:none;"></textarea>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+          <div>
+            <div style="font-size:11px;color:var(--texto-ter);margin-bottom:4px;font-family:var(--font-corpo);">Dia da semana</div>
+            <select id="novo-lembrete-dia">
+              <option value="0">Domingo</option>
+              <option value="1">Segunda</option>
+              <option value="2">Terça</option>
+              <option value="3">Quarta</option>
+              <option value="4">Quinta</option>
+              <option value="5">Sexta</option>
+              <option value="6">Sábado</option>
+            </select>
+          </div>
+          <div>
+            <div style="font-size:11px;color:var(--texto-ter);margin-bottom:4px;font-family:var(--font-corpo);">Horário</div>
+            <div id="roleta-lembrete-hora" class="roleta-wrap"></div>
+            <input type="hidden" id="novo-lembrete-hora" value="08:00"/>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <label class="toggle"><input type="checkbox" id="novo-lembrete-som" checked/><span class="tslider"></span></label>
+          <span style="font-size:13px;color:var(--texto-sec);font-family:var(--font-corpo);">Som e vibração</span>
+        </div>
+        <button class="btn-primario" onclick="salvarLembrete()">
+          <i class="ti ti-check" style="font-size:16px;"></i> Programar lembrete
+        </button>
+      </div>
+    </div>
+
+    <div class="secao-label">Lembretes ativos</div>
+    <div id="lista-lembretes">
+      <div style="font-size:13px;color:var(--texto-sec);font-family:var(--font-corpo);">Nenhum lembrete programado ainda.</div>
+    </div>
+
+  </div>
+
+  <!-- ==================== NAVEGAÇÃO INFERIOR ==================== -->
+  <nav id="nav">
+    <button class="nav-item ativo" onclick="irPara('inicio')" id="nav-inicio">
+      <i class="ti ti-home"></i><span>Início</span>
+    </button>
+    <button class="nav-item" onclick="irPara('tarefas')" id="nav-tarefas">
+      <i class="ti ti-list-check"></i><span>Tarefas</span>
+    </button>
+    <button class="nav-item" onclick="irPara('tempos')" id="nav-tempos">
+      <i class="ti ti-clock"></i><span>Tempos</span>
+    </button>
+    <button class="nav-item" onclick="irPara('missa')" id="nav-missa">
+      <i class="ti ti-bell-off"></i><span>Missa</span>
+    </button>
+
+
+  </nav>
+
+</div>
+
+<!-- ==================== MENU LATERAL ==================== -->
+<div id="overlay" onclick="fecharMenu()"></div>
+<nav id="menu-lateral" aria-label="Menu lateral">
+  <button class="menu-fechar" onclick="fecharMenu()">✕</button>
+  <div class="menu-topo">
+    <div class="menu-cruz">✠</div>
+    <div class="menu-nome">VIRTUTIS VIA</div>
+    <div class="menu-sub">O Caminho da Virtude</div>
+  </div>
+  <div class="menu-secao">
+    <div class="menu-secao-label">Funções adicionais</div>
+    <div class="menu-item" onclick="irPara('porticos');fecharMenu()">
+      <div class="menu-icone" style="background:#1a1a2e;">🔖</div>
+      <div><div class="menu-item-nome">Pórticos</div><div class="menu-item-desc">Links e Porta Vaticana</div></div>
+    </div>
+    <div class="menu-item" onclick="irPara('lembretes');fecharMenu()">
+      <div class="menu-icone" style="background:#1a2a3a;">⚜</div>
+      <div class="menu-item-nome" style="flex:1;">Avisos programados</div>
+    </div>
+  </div>
+  <div class="menu-secao">
+    <div class="menu-secao-label">Em desenvolvimento</div>
+    <div class="menu-item">
+      <div class="menu-icone" style="background:#1a1a1a;">📊</div>
+      <div class="menu-item-nome" style="flex:1;">Virtudes — Equilíbrio</div>
+      <span class="menu-tag menu-tag-breve">Em breve</span>
+    </div>
+    <div class="menu-item">
+      <div class="menu-icone" style="background:#1a1a1a;">📝</div>
+      <div class="menu-item-nome" style="flex:1;">Registro do dia</div>
+      <span class="menu-tag menu-tag-breve">Em breve</span>
+    </div>
+    <div class="menu-item">
+      <div class="menu-icone" style="background:#1a1a1a;">🎯</div>
+      <div class="menu-item-nome" style="flex:1;">Modo Foco</div>
+      <span class="menu-tag menu-tag-breve">Em breve</span>
+    </div>
+  </div>
+  <div class="menu-secao">
+    <div class="menu-secao-label">Aplicativo</div>
+    <div class="menu-item" onclick="fecharMenu()">
+      <div class="menu-icone" style="background:#1a2a1a;">⚙</div>
+      <div><div class="menu-item-nome">Configurações</div><div class="menu-item-desc">Preferências gerais</div></div>
+    </div>
+  </div>
+  <div class="menu-rodape">
+    <div class="menu-rodape-txt">"A santidade não é um luxo, mas uma necessidade simples para o bem de cada um e do mundo." — Santa Teresa de Calcutá</div>
+  </div>
+</nav>
+
+<!-- ==================== MODAL: ADICIONAR TAREFA ==================== -->
+<div class="modal-fundo" id="modal-tarefa">
+  <div class="modal-box">
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <div class="modal-titulo">Nova Tarefa</div>
+      <button class="modal-fechar" onclick="fecharModal('modal-tarefa')">✕</button>
+    </div>
+    <input type="text" id="nova-tarefa-txt" placeholder="Descrição da tarefa..."/>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <div>
+        <div style="font-size:11px;color:var(--texto-ter);margin-bottom:4px;font-family:var(--font-corpo);">Horário</div>
+        <div id="roleta-tarefa-hora" class="roleta-wrap"></div>
+      <input type="hidden" id="nova-tarefa-hora" value="00:00"/>
+      </div>
+      <div>
+        <div style="font-size:11px;color:var(--texto-ter);margin-bottom:4px;font-family:var(--font-corpo);">Dia</div>
+        <select id="nova-tarefa-dia">
+          <option value="0">Domingo</option>
+          <option value="1">Segunda</option>
+          <option value="2">Terça</option>
+          <option value="3">Quarta</option>
+          <option value="4">Quinta</option>
+          <option value="5">Sexta</option>
+          <option value="6">Sábado</option>
+        </select>
+      </div>
+    </div>
+    <button class="btn-primario" onclick="salvarTarefa()">
+      <i class="ti ti-check" style="font-size:16px;"></i> Salvar tarefa
+    </button>
+  </div>
+</div>
+
+<!-- ==================== MODAL: ADICIONAR APP ==================== -->
+<div class="modal-fundo" id="modal-app">
+  <div class="modal-box">
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <div class="modal-titulo">Monitorar Aplicativo</div>
+      <button class="modal-fechar" onclick="fecharModal('modal-app')">✕</button>
+    </div>
+    <input type="text" id="novo-app-nome" placeholder="Nome do aplicativo (ex: YouTube)"/>
+    <div>
+      <div style="font-size:11px;color:var(--texto-ter);margin-bottom:4px;font-family:var(--font-corpo);">Limite diário (minutos)</div>
+      <input type="text" id="novo-app-limite" placeholder="Ex: 30"/>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <label class="toggle"><input type="checkbox" id="novo-app-shorts"/><span class="tslider"></span></label>
+      <span style="font-size:13px;color:var(--texto-sec);font-family:var(--font-corpo);">Bloquear Shorts / Reels</span>
+    </div>
+    <button class="btn-primario" onclick="salvarApp()">
+      <i class="ti ti-check" style="font-size:16px;"></i> Salvar
+    </button>
+  </div>
+</div>
+
+<!-- ==================== MODAL: ADICIONAR PERÍODO ==================== -->
+<div class="modal-fundo" id="modal-periodo">
+  <div class="modal-box">
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <div class="modal-titulo">Novo Período</div>
+      <button class="modal-fechar" onclick="fecharModal('modal-periodo')">✕</button>
+    </div>
+    <input type="text" id="novo-periodo-nome" placeholder="Nome do período (ex: Estudo)"/>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <div>
+        <div style="font-size:11px;color:var(--texto-ter);margin-bottom:4px;font-family:var(--font-corpo);">Início</div>
+        <div id="roleta-periodo-inicio" class="roleta-wrap"></div>
+        <input type="hidden" id="novo-periodo-inicio" value="08:00"/>
+      </div>
+      <div>
+        <div style="font-size:11px;color:var(--texto-ter);margin-bottom:4px;font-family:var(--font-corpo);">Fim</div>
+        <div id="roleta-periodo-fim" class="roleta-wrap"></div>
+        <input type="hidden" id="novo-periodo-fim" value="09:00"/>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:11px;color:var(--texto-ter);margin-bottom:4px;font-family:var(--font-corpo);">Tipo</div>
+      <select id="novo-periodo-tipo">
+        <option value="livre">Livre (celular permitido)</option>
+        <option value="restrito">Restrito (aviso de disciplina)</option>
+        <option value="silencio">Silêncio (sem distrações)</option>
+      </select>
+    </div>
+    <button class="btn-primario" onclick="salvarPeriodo()">
+      <i class="ti ti-check" style="font-size:16px;"></i> Salvar período
+    </button>
+  </div>
+</div>
+
+<!-- ==================== MODAL: ADICIONAR MISSA ==================== -->
+<div class="modal-fundo" id="modal-missa">
+  <div class="modal-box">
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <div class="modal-titulo">✠ Horário de Missa</div>
+      <button class="modal-fechar" onclick="fecharModal('modal-missa')">✕</button>
+    </div>
+    <div>
+      <div style="font-size:11px;color:var(--texto-ter);margin-bottom:4px;font-family:var(--font-corpo);">Dia da semana</div>
+      <select id="nova-missa-dia">
+        <option value="0">Domingo</option>
+        <option value="1">Segunda-feira</option>
+        <option value="2">Terça-feira</option>
+        <option value="3">Quarta-feira</option>
+        <option value="4">Quinta-feira</option>
+        <option value="5">Sexta-feira</option>
+        <option value="6">Sábado</option>
+      </select>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <div>
+        <div style="font-size:11px;color:var(--texto-ter);margin-bottom:4px;font-family:var(--font-corpo);">Início</div>
+        <div id="roleta-missa-inicio" class="roleta-wrap"></div>
+        <input type="hidden" id="nova-missa-inicio" value="08:00"/>
+      </div>
+      <div>
+        <div style="font-size:11px;color:var(--texto-ter);margin-bottom:4px;font-family:var(--font-corpo);">Fim</div>
+        <div id="roleta-missa-fim" class="roleta-wrap"></div>
+        <input type="hidden" id="nova-missa-fim" value="09:00"/>
+      </div>
+    </div>
+    <input type="text" id="nova-missa-nome" placeholder="Nome (ex: Missa da manhã)"/>
+    <button class="btn-primario" onclick="salvarMissa()">
+      <i class="ti ti-check" style="font-size:16px;"></i> Salvar Missa
+    </button>
+  </div>
+</div>
+
+<!-- ==================== MODAL: PORTAL ==================== -->
+<div class="modal-fundo" id="modal-portal">
+  <div class="modal-box">
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <div class="modal-titulo">Novo Portal</div>
+      <button class="modal-fechar" onclick="fecharModal('modal-portal')">✕</button>
+    </div>
+    <input type="text" id="novo-portal-nome" placeholder="Nome do portal (ex: Vatican News)"/>
+    <input type="text" id="novo-portal-url" placeholder="Link (ex: https://vaticannews.va)"/>
+    <input type="text" id="novo-portal-icone" placeholder="Ícone (emoji, ex: 📰)"/>
+    <input type="text" id="novo-portal-categoria" placeholder="Categoria (ex: Fé e espiritualidade)"/>
+    <button class="btn-primario" onclick="salvarPortal()">
+      <i class="ti ti-check" style="font-size:16px;"></i> Salvar portal
+    </button>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// VIRTUTIS VIA — Lógica principal
+// Armazenamento: localStorage (no celular, via PWA/navegador)
+// ============================================================
+
+const DIAS = ['Domingo','Segunda-feira','Terça-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sábado'];
+const DIAS_CURTO = ['Dom.','Seg.','Ter.','Qua.','Qui.','Sex.','Sáb.'];
+
+const FRASES_ABAS = {
+  inicio:    '"Age quod agis" — faze com perfeição o que fazes agora, oferecendo cada momento ao Senhor.',
+  tarefas:   '"Ora et Labora" — toda obra boa pode ser santificada: oração, estudo, exercício e serviço ao próximo.',
+  tempos:    '"A custódia dos olhos é guarda da alma." — São João Crisóstomo. O tempo recuperado pode ser oferecido a Deus.',
+  missa:     '"Nada se prefira à obra de Deus." — São Bento. A Santa Missa é o centro de toda a vida cristã.',
+  porticos:   '"Sede prudentes como as serpentes." — Mt 10,16. Escolhe com discernimento as fontes onde bebes o saber.',
+  vaticano:  '"Petra autem erat Christus." — 1Cor 10,4. A rocha é Cristo, e sobre ela foi edificada a Santa Igreja.',
+  lembretes: '"Vigilate et orate." — Vigiai e orai. — Mt 26,41. O Senhor nos convida à vigilância constante.',
+};
+
+// Dados padrão
+const DADOS_PADRAO = {
+  tarefas: [],
+  urgentes: [],
+  apps: [],
+  periodos: [],
+  missas: [
+    { id: 'p1', dia: 0, inicio: '06:30', fim: '08:30', nome: 'Missa da manhã cedo', padrao: true },
+    { id: 'p2', dia: 0, inicio: '09:00', fim: '11:00', nome: 'Missa da manhã', padrao: true },
+  ],
+  porticos: [],
+  config: { guarda: true, missa: true },
+};
+
+// ============================================================
+// ARMAZENAMENTO
+// ============================================================
+function carregar(chave) {
+  try { return JSON.parse(localStorage.getItem('vv_' + chave)) ?? DADOS_PADRAO[chave]; }
+  catch { return DADOS_PADRAO[chave]; }
+}
+function salvar(chave, valor) {
+  try { localStorage.setItem('vv_' + chave, JSON.stringify(valor)); } catch {}
+}
+
+let dados = {
+  tarefas: carregar('tarefas'),
+  urgentes: carregar('urgentes'),
+  apps: carregar('apps'),
+  periodos: carregar('periodos'),
+  missas: carregar('missas'),
+  porticos: carregar('porticos'),
+  config: carregar('config'),
+};
+
+function salvarTodos() {
+  Object.keys(dados).forEach(k => salvar(k, dados[k]));
+}
+function salvarConfig() {
+  dados.config.guarda = document.getElementById('toggle-guarda').checked;
+  dados.config.missa = document.getElementById('toggle-missa').checked;
+  salvar('config', dados.config);
+}
+
+// ============================================================
+// NAVEGAÇÃO
+// ============================================================
+let telaAtual = 'inicio';
+function irPara(tela) {
+  document.querySelectorAll('.tela').forEach(t => t.classList.remove('ativa'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('ativo'));
+  document.getElementById('tela-' + tela).classList.add('ativa');
+  const navBtn = document.getElementById('nav-' + tela);
+  if (navBtn) navBtn.classList.add('ativo');
+  // Nav invisível em vaticano
+  document.getElementById('nav').style.display = (tela === 'vaticano') ? 'none' : 'flex';
+  // Frase piedosa
+  const frase = FRASES_ABAS[tela] || FRASES_ABAS.inicio;
+  document.getElementById('frase-aba').textContent = frase;
+  telaAtual = tela;
+  renderizar(tela);
+}
+
+// ============================================================
+// MENU LATERAL
+// ============================================================
+function abrirMenu() {
+  document.getElementById('menu-lateral').classList.add('aberto');
+  document.getElementById('overlay').classList.add('aberto');
+}
+function fecharMenu() {
+  document.getElementById('menu-lateral').classList.remove('aberto');
+  document.getElementById('overlay').classList.remove('aberto');
+}
+
+// ============================================================
+// MODAIS
+// ============================================================
+function abrirModal(id) { document.getElementById(id).classList.add('aberto'); }
+function fecharModal(id) { document.getElementById(id).classList.remove('aberto'); }
+function abrirModalTarefa() {
+  document.getElementById('nova-tarefa-dia').value = diaSelecionado;
+  abrirModal('modal-tarefa');
+}
+function abrirModalApp() { abrirModal('modal-app'); }
+function abrirModalPeriodo() { abrirModal('modal-periodo'); }
+function abrirModalMissa() { abrirModal('modal-missa'); }
+function abrirModalPortal() { abrirModal('modal-portal'); }
+function abrirNotificacoes() {
+  alert('Painel de notificações — em desenvolvimento.\n\nAqui aparecerão: modo Missa ativo, tempo restante nos apps, tarefas do dia e mensagem personalizada.');
+}
+
+// ============================================================
+// INFO LITÚRGICA (simplificada)
+// ============================================================
+const VERSICULOS = [
+  { txt: '"Tudo o que fizerdes, fazei de todo o coração, como para o Senhor."', ref: 'Col 3,23' },
+  { txt: '"Sede, pois, perfeitos como é perfeito o vosso Pai celeste."', ref: 'Mt 5,48' },
+  { txt: '"Buscai primeiro o Reino de Deus e a sua justiça."', ref: 'Mt 6,33' },
+  { txt: '"Posso tudo naquele que me conforta."', ref: 'Fl 4,13' },
+  { txt: '"Agradecei em tudo, pois esta é a vontade de Deus."', ref: '1Ts 5,18' },
+  { txt: '"Aquele que começou em vós esta boa obra, há de completá-la."', ref: 'Fl 1,6' },
+  { txt: '"Confiai no Senhor de todo o vosso coração."', ref: 'Prov 3,5' },
+];
+const SANTOS_DIA = [
+  'São Gregório VII, Papa', 'São João I, Papa e Mártir', 'Santa Joana de Arco',
+  'São Filipe Néri', 'São Pio V, Papa', 'São Domingos Sávio', 'São João da Salle',
+];
+const TEMPO_LITURGICO = ['Tempo Comum', 'Advento', 'Natal', 'Quaresma', 'Tempo Pascal', 'Tempo Comum'];
+
+function carregarInfoDia() {
+  const hoje = new Date();
+  const diaSemana = hoje.getDay();
+  const semana = Math.floor(hoje.getDate() / 7) + 1;
+  const v = VERSICULOS[diaSemana % VERSICULOS.length];
+  const s = SANTOS_DIA[hoje.getDate() % SANTOS_DIA.length];
+  const t = TEMPO_LITURGICO[Math.floor(hoje.getMonth() / 2) % TEMPO_LITURGICO.length];
+  const meses = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+
+  document.getElementById('info-liturgia').textContent =
+    `${DIAS[diaSemana]}, ${hoje.getDate()} de ${meses[hoje.getMonth()]} · ${t} ${semana > 1 ? 'Semana ' + ['I','II','III','IV'][Math.min(semana-1,3)] : ''}`;
+  document.getElementById('santo-nome').textContent = '✠ ' + s;
+  document.getElementById('versiculo-dia').textContent = `${v.txt} — ${v.ref}`;
+}
+
+// ============================================================
+// TAREFAS
+// ============================================================
+let diaSelecionado = new Date().getDay();
+
+function renderDiasNav() {
+  const nav = document.getElementById('dias-nav');
+  nav.innerHTML = DIAS_CURTO.map((d, i) =>
+    `<button class="dia-btn ${i === diaSelecionado ? 'ativo' : ''}" onclick="selecionarDia(${i})">${d}</button>`
+  ).join('');
+}
+
+function selecionarDia(i) {
+  diaSelecionado = i;
+  renderDiasNav();
+  renderTarefasDia();
+  document.getElementById('titulo-dia-sel').textContent = DIAS[i];
+}
+
+function renderTarefasDia() {
+  const lista = document.getElementById('lista-dia-sel');
+  const tarefas = dados.tarefas.filter(t => t.dia == diaSelecionado);
+  if (!tarefas.length) {
+    lista.innerHTML = `<div style="font-size:13px;color:var(--texto-sec);padding:8px 0;font-family:var(--font-corpo);">Nenhuma tarefa. Toque em + para adicionar.</div>`;
+    return;
+  }
+  lista.innerHTML = tarefas.sort((a,b) => a.hora.localeCompare(b.hora)).map(t => `
+    <div class="linha">
+      <div class="chk ${t.feito ? 'feito' : ''}" onclick="toggleTarefa('${t.id}')"></div>
+      <span class="txt-tarefa ${t.feito ? 'feito' : ''}">${t.txt}</span>
+      <span class="txt-hora">${t.hora}</span>
+      <button onclick="removerTarefa('${t.id}')" style="background:transparent;border:none;color:var(--texto-ter);font-size:18px;cursor:pointer;padding:0 2px;">
+        <i class="ti ti-trash"></i>
+      </button>
+    </div>`).join('');
+}
+
+function renderTarefasHoje() {
+  const hoje = new Date().getDay();
+  const tarefas = dados.tarefas.filter(t => t.dia == hoje);
+  const feitas = tarefas.filter(t => t.feito).length;
+  document.getElementById('badge-hoje').textContent = `${feitas} de ${tarefas.length}`;
+  const lista = document.getElementById('lista-hoje');
+  if (!tarefas.length) {
+    lista.innerHTML = `<div style="font-size:13px;color:var(--texto-sec);padding:4px 0;font-family:var(--font-corpo);">Nenhuma tarefa para hoje.</div>`;
+    return;
+  }
+  lista.innerHTML = tarefas.sort((a,b) => a.hora.localeCompare(b.hora)).map(t => `
+    <div class="linha">
+      <div class="chk ${t.feito ? 'feito' : ''}" onclick="toggleTarefaInicio('${t.id}')"></div>
+      <span class="txt-tarefa ${t.feito ? 'feito' : ''}">${t.txt}</span>
+      <span class="txt-hora">${t.hora}</span>
+    </div>`).join('');
+}
+
+function renderUrgentesInicio() {
+  const cont = document.getElementById('urgentes-inicio');
+  if (!dados.urgentes.length) { cont.innerHTML = ''; return; }
+  cont.innerHTML = dados.urgentes.map(u => `
+    <div class="card" style="border-color:rgba(139,32,32,.6);">
+      <div class="linha" style="border-top:none;">
+        <div class="chk ${u.feito ? 'feito' : ''}" onclick="toggleUrgente('${u.id}')"></div>
+        <span class="txt-tarefa ${u.feito ? 'feito' : ''}">${u.txt}</span>
+        <span class="tag-urgente">Urgente</span>
+        <button onclick="removerUrgente('${u.id}')" style="background:transparent;border:none;color:var(--texto-ter);font-size:18px;cursor:pointer;">
+          <i class="ti ti-trash"></i>
+        </button>
+      </div>
+    </div>`).join('');
+}
+
+function adicionarUrgente() {
+  const inp = document.getElementById('input-urgente');
+  const txt = inp.value.trim();
+  if (!txt) return;
+  dados.urgentes.push({ id: Date.now().toString(), txt, feito: false });
+  salvar('urgentes', dados.urgentes);
+  inp.value = '';
+  renderizar('tarefas');
+  renderUrgentesInicio();
+}
+
+function toggleUrgente(id) {
+  const u = dados.urgentes.find(x => x.id === id);
+  if (u) { u.feito = !u.feito; salvar('urgentes', dados.urgentes); renderizar(telaAtual); renderUrgentesInicio(); }
+}
+function removerUrgente(id) {
+  dados.urgentes = dados.urgentes.filter(x => x.id !== id);
+  salvar('urgentes', dados.urgentes);
+  renderizar(telaAtual);
+  renderUrgentesInicio();
+}
+
+function salvarTarefa() {
+  const txt = document.getElementById('nova-tarefa-txt').value.trim();
+  const hora = document.getElementById('nova-tarefa-hora').value || '00:00';
+  const dia = parseInt(document.getElementById('nova-tarefa-dia').value);
+  if (!txt) return;
+  dados.tarefas.push({ id: Date.now().toString(), txt, hora, dia, feito: false });
+  salvar('tarefas', dados.tarefas);
+  fecharModal('modal-tarefa');
+  document.getElementById('nova-tarefa-txt').value = '';
+  renderizar('tarefas');
+  renderTarefasHoje();
+}
+
+function toggleTarefa(id) {
+  const t = dados.tarefas.find(x => x.id === id);
+  if (t) { t.feito = !t.feito; salvar('tarefas', dados.tarefas); renderTarefasDia(); renderTarefasHoje(); }
+}
+function toggleTarefaInicio(id) {
+  const t = dados.tarefas.find(x => x.id === id);
+  if (t) { t.feito = !t.feito; salvar('tarefas', dados.tarefas); renderTarefasHoje(); }
+}
+function removerTarefa(id) {
+  dados.tarefas = dados.tarefas.filter(x => x.id !== id);
+  salvar('tarefas', dados.tarefas);
+  renderTarefasDia();
+  renderTarefasHoje();
+}
+
+// ============================================================
+// APPS / TEMPOS
+// ============================================================
+function renderApps() {
+  const lista = document.getElementById('lista-apps');
+  if (!dados.apps.length) {
+    lista.innerHTML = `<div style="font-size:13px;color:var(--texto-sec);font-family:var(--font-corpo);">Nenhum aplicativo monitorado ainda.</div>`;
+    return;
+  }
+  const cores = ['#ff0000','#E1306C','#1877F2','#25D366','#0088cc','#FF6900','#1DB954'];
+  lista.innerHTML = dados.apps.map((a, i) => {
+    const pct = Math.min(100, Math.round((a.usado || 0) / a.limite * 100));
+    const perigo = pct >= 80;
+    const restante = Math.max(0, a.limite - (a.usado || 0));
+    return `<div class="app-row">
+      <div class="app-icone" style="background:${cores[i % cores.length]};">${a.nome.substring(0,2).toUpperCase()}</div>
+      <div class="app-info">
+        <div class="app-nome">${a.nome}${a.shorts ? ' <span style="font-size:10px;color:var(--dourado-borda);">(Shorts bloqueado)</span>' : ''}</div>
+        <div class="app-limite">Limite: ${a.limite} min/dia</div>
+        <div class="barra-wrap" style="margin-top:5px;max-width:200px;">
+          <div class="barra-fill ${perigo ? 'perigo' : ''}" style="width:${pct}%;"></div>
+        </div>
+      </div>
+      <div class="app-tempo" style="color:${perigo ? '#c0392b' : 'var(--dourado)'};">${restante} min</div>
+      <button onclick="removerApp('${a.id}')" style="background:transparent;border:none;color:var(--texto-ter);font-size:18px;cursor:pointer;">
+        <i class="ti ti-trash"></i>
+      </button>
+    </div>`;
+  }).join('');
+}
+
+function renderTemposInicio() {
+  const card = document.getElementById('card-tempos-inicio');
+  if (!dados.apps.length) {
+    card.innerHTML = `<div style="font-size:13px;color:var(--texto-sec);font-family:var(--font-corpo);">Nenhum aplicativo configurado.</div>`;
+    return;
+  }
+  const cores = ['#ff0000','#E1306C','#1877F2','#25D366','#0088cc','#FF6900'];
+  card.innerHTML = dados.apps.slice(0,3).map((a, i) => {
+    const pct = Math.min(100, Math.round((a.usado || 0) / a.limite * 100));
+    const perigo = pct >= 80;
+    const restante = Math.max(0, a.limite - (a.usado || 0));
+    return `<div class="linha" ${i===0?'style="border-top:none;"':''}>
+      <span style="font-size:13px;color:var(--dourado-claro);min-width:80px;font-family:var(--font-corpo);">${a.nome}</span>
+      <div class="barra-wrap"><div class="barra-fill ${perigo?'perigo':''}" style="width:${pct}%;"></div></div>
+      <span style="font-size:11px;color:${perigo?'#c0392b':'var(--dourado)'};min-width:36px;text-align:right;font-family:var(--font-corpo);">${restante} min</span>
+    </div>`;
+  }).join('');
+}
+
+function salvarApp() {
+  const nome = document.getElementById('novo-app-nome').value.trim();
+  const limite = parseInt(document.getElementById('novo-app-limite').value);
+  const shorts = document.getElementById('novo-app-shorts').checked;
+  if (!nome || !limite) return;
+  dados.apps.push({ id: Date.now().toString(), nome, limite, shorts, usado: 0 });
+  salvar('apps', dados.apps);
+  fecharModal('modal-app');
+  document.getElementById('novo-app-nome').value = '';
+  document.getElementById('novo-app-limite').value = '';
+  renderApps();
+  renderTemposInicio();
+}
+function removerApp(id) {
+  dados.apps = dados.apps.filter(x => x.id !== id);
+  salvar('apps', dados.apps);
+  renderApps();
+  renderTemposInicio();
+}
+function destravarmApp() {
+  const senha = prompt('Digite sua senha para destravar o aplicativo.\n\n"É isso que quero mesmo?"');
+  if (senha !== null) alert('Aplicativo destravado por 15 minutos.\nLembre-se: este tempo pode ser oferecido a Deus.');
+}
+
+// ============================================================
+// PERÍODOS
+// ============================================================
+const COR_PERIODO = { livre: '#1a5c3a', restrito: '#2a1a0a', silencio: '#1a1a3a' };
+const TEXTO_PERIODO = { livre: 'Livre', restrito: 'Restrito', silencio: 'Silêncio' };
+const COR_TXT_PERIODO = { livre: '#5de8a0', restrito: '#c9a84c', silencio: '#8888cc' };
+
+function renderPeriodos() {
+  const lista = document.getElementById('lista-periodos');
+  if (!dados.periodos.length) {
+    lista.innerHTML = `<div style="font-size:13px;color:var(--texto-sec);font-family:var(--font-corpo);">Nenhum período configurado.</div>`;
+    return;
+  }
+  const agora = new Date();
+  const horaAtual = `${String(agora.getHours()).padStart(2,'0')}:${String(agora.getMinutes()).padStart(2,'0')}`;
+  lista.innerHTML = dados.periodos.map(p => {
+    const ativo = horaAtual >= p.inicio && horaAtual <= p.fim;
+    return `<div class="linha" style="${lista.innerHTML===''?'border-top:none;':''}">
+      <div class="dot" style="background:${COR_TXT_PERIODO[p.tipo]};"></div>
+      <div style="flex:1;">
+        <div style="font-size:13px;color:var(--dourado-claro);font-family:var(--font-corpo);">${p.nome}</div>
+        <div style="font-size:10px;color:var(--texto-sec);font-family:var(--font-corpo);">${p.inicio} – ${p.fim}</div>
+      </div>
+      <span style="font-size:10px;padding:3px 10px;border-radius:20px;background:${COR_PERIODO[p.tipo]};color:${COR_TXT_PERIODO[p.tipo]};font-family:var(--font-corpo);">${ativo ? 'Ativo' : TEXTO_PERIODO[p.tipo]}</span>
+      <button onclick="removerPeriodo('${p.id}')" style="background:transparent;border:none;color:var(--texto-ter);font-size:18px;cursor:pointer;margin-left:4px;">
+        <i class="ti ti-trash"></i>
+      </button>
+    </div>`;
+  }).join('');
+}
+
+function renderPeriodoInicio() {
+  const card = document.getElementById('card-periodo-inicio');
+  if (!dados.periodos.length) {
+    card.innerHTML = `<div style="font-size:13px;color:var(--texto-sec);font-family:var(--font-corpo);">Nenhum período configurado ainda.</div>`;
+    return;
+  }
+  const agora = new Date();
+  const horaAtual = `${String(agora.getHours()).padStart(2,'0')}:${String(agora.getMinutes()).padStart(2,'0')}`;
+  card.innerHTML = dados.periodos.slice(0,3).map((p, i) => {
+    const ativo = horaAtual >= p.inicio && horaAtual <= p.fim;
+    return `<div class="linha" ${i===0?'style="border-top:none;"':''}>
+      <div class="dot" style="background:${COR_TXT_PERIODO[p.tipo]};"></div>
+      <div style="flex:1;">
+        <div style="font-size:13px;color:var(--dourado-claro);font-family:var(--font-corpo);">${p.nome}</div>
+        <div style="font-size:10px;color:var(--texto-sec);font-family:var(--font-corpo);">${p.inicio} – ${p.fim}</div>
+      </div>
+      <span class="periodo-badge ${ativo ? 'periodo-ativo' : 'periodo-breve'}">${ativo ? 'Ativo' : 'Em breve'}</span>
+    </div>`;
+  }).join('');
+}
+
+function salvarPeriodo() {
+  const nome = document.getElementById('novo-periodo-nome').value.trim();
+  const inicio = document.getElementById('novo-periodo-inicio').value;
+  const fim = document.getElementById('novo-periodo-fim').value;
+  const tipo = document.getElementById('novo-periodo-tipo').value;
+  if (!nome || !inicio || !fim) return;
+  dados.periodos.push({ id: Date.now().toString(), nome, inicio, fim, tipo });
+  salvar('periodos', dados.periodos);
+  fecharModal('modal-periodo');
+  document.getElementById('novo-periodo-nome').value = '';
+  renderPeriodos();
+  renderPeriodoInicio();
+}
+function removerPeriodo(id) {
+  dados.periodos = dados.periodos.filter(x => x.id !== id);
+  salvar('periodos', dados.periodos);
+  renderPeriodos();
+  renderPeriodoInicio();
+}
+
+// ============================================================
+// MISSAS
+// ============================================================
+function renderMissas() {
+  const padrao = dados.missas.filter(m => m.padrao);
+  const outras = dados.missas.filter(m => !m.padrao);
+  const listaPadrao = document.getElementById('lista-missas-padrao');
+  const listaOutras = document.getElementById('lista-missas-outras');
+
+  listaPadrao.innerHTML = padrao.map(m => `
+    <div class="missa-item padrao">
+      <span class="missa-dia">${DIAS_CURTO[m.dia]}</span>
+      <div style="flex:1;">
+        <div class="missa-hora">${m.inicio} – ${m.fim}</div>
+        <div class="missa-nome-item">${m.nome}</div>
+      </div>
+      <div class="missa-acoes">
+        <button class="missa-btn-acao" onclick="removerMissa('${m.id}')" style="color:var(--texto-ter);"><i class="ti ti-trash"></i></button>
+      </div>
+    </div>`).join('');
+
+  if (!outras.length) {
+    listaOutras.innerHTML = `<div style="font-size:13px;color:var(--texto-sec);font-family:var(--font-corpo);">Nenhuma outra missa configurada.</div>`;
+  } else {
+    listaOutras.innerHTML = outras.map(m => `
+      <div class="missa-item">
+        <span class="missa-dia" style="background:rgba(26,48,80,.5);color:var(--texto-sec);">${DIAS_CURTO[m.dia]}</span>
+        <div style="flex:1;">
+          <div class="missa-hora">${m.inicio} – ${m.fim}</div>
+          <div class="missa-nome-item">${m.nome}</div>
+        </div>
+        <button class="missa-btn-acao" onclick="removerMissa('${m.id}')" style="color:var(--texto-ter);"><i class="ti ti-trash"></i></button>
+      </div>`).join('');
+  }
+  verificarProximaMissa();
+}
+
+function verificarProximaMissa() {
+  const agora = new Date();
+  const diaSemana = agora.getDay();
+  const horaAtual = `${String(agora.getHours()).padStart(2,'0')}:${String(agora.getMinutes()).padStart(2,'0')}`;
+  let proxima = dados.missas.find(m => m.dia == diaSemana && m.inicio > horaAtual);
+  const bannerPrincipal = document.getElementById('banner-missa');
+  const bannerTela = document.getElementById('banner-proxima-missa');
+
+  // Missa ativa agora?
+  const ativa = dados.missas.find(m => m.dia == diaSemana && m.inicio <= horaAtual && m.fim >= horaAtual);
+  if (ativa && dados.config.missa) {
+    bannerPrincipal.style.display = 'flex';
+    document.getElementById('banner-missa-txt').textContent = `Modo Missa ativo · celular silenciado até às ${ativa.fim}`;
+  } else {
+    bannerPrincipal.style.display = 'none';
+  }
+
+  if (proxima) {
+    bannerTela.style.display = 'flex';
+    // Calcular minutos
+    const [hI, mI] = proxima.inicio.split(':').map(Number);
+    const minutosRestantes = (hI * 60 + mI) - (agora.getHours() * 60 + agora.getMinutes());
+    document.getElementById('txt-proxima-missa').textContent = `${DIAS[proxima.dia]} · ${proxima.inicio} — em ${minutosRestantes} minutos`;
+  } else {
+    bannerTela.style.display = 'none';
+  }
+}
+
+function salvarMissa() {
+  const dia = parseInt(document.getElementById('nova-missa-dia').value);
+  const inicio = document.getElementById('nova-missa-inicio').value;
+  const fim = document.getElementById('nova-missa-fim').value;
+  const nome = document.getElementById('nova-missa-nome').value.trim() || 'Missa';
+  if (!inicio || !fim) return;
+  dados.missas.push({ id: Date.now().toString(), dia, inicio, fim, nome, padrao: false });
+  salvar('missas', dados.missas);
+  fecharModal('modal-missa');
+  document.getElementById('nova-missa-nome').value = '';
+  renderMissas();
+}
+function removerMissa(id) {
+  dados.missas = dados.missas.filter(x => x.id !== id);
+  salvar('missas', dados.missas);
+  renderMissas();
+}
+
+// ============================================================
+// PORTAIS
+// ============================================================
+function renderPórticos() {
+  const cont = document.getElementById('porticos-categorias');
+  if (!dados.porticos.length) {
+    cont.innerHTML = `<div style="font-size:13px;color:var(--texto-sec);font-family:var(--font-corpo);padding:4px 0;">Nenhum portal adicionado. Toque em "+ Adicionar portal" para começar.</div>`;
+    return;
+  }
+  // Agrupar por categoria
+  const cats = {};
+  dados.porticos.forEach(p => {
+    if (!cats[p.categoria]) cats[p.categoria] = [];
+    cats[p.categoria].push(p);
+  });
+  cont.innerHTML = Object.entries(cats).map(([cat, porticos]) => `
+    <div class="secao-label" style="margin-top:4px;">${cat}</div>
+    <div class="porticos-grid">
+      ${porticos.map(p => `
+        <a href="${p.url}" target="_blank" class="portal-item">
+          <div class="portal-icone">${p.icone || '🔗'}</div>
+          <div class="portal-nome">${p.nome}</div>
+          <div class="portal-url">${p.url.replace(/^https?:\/\//,'').split('/')[0]}</div>
+        </a>`).join('')}
+      <div class="portal-add" onclick="abrirModalPortal()">
+        <div class="portal-add-icone"><i class="ti ti-plus"></i></div>
+        <div class="portal-add-txt">Adicionar</div>
+      </div>
+    </div>`).join('');
+}
+
+function salvarPortal() {
+  const nome = document.getElementById('novo-portal-nome').value.trim();
+  let url = document.getElementById('novo-portal-url').value.trim();
+  const icone = document.getElementById('novo-portal-icone').value.trim() || '🔗';
+  const categoria = document.getElementById('novo-portal-categoria').value.trim() || 'Geral';
+  if (!nome || !url) return;
+  if (!url.startsWith('http')) url = 'https://' + url;
+  dados.porticos.push({ id: Date.now().toString(), nome, url, icone, categoria });
+  salvar('porticos', dados.porticos);
+  fecharModal('modal-portal');
+  ['novo-portal-nome','novo-portal-url','novo-portal-icone','novo-portal-categoria'].forEach(id => document.getElementById(id).value = '');
+  renderPórticos();
+}
+
+// ============================================================
+// RENDERIZAR (por tela)
+// ============================================================
+function renderizar(tela) {
+  if (tela === 'inicio') {
+    renderTarefasHoje();
+    renderUrgentesInicio();
+    renderTemposInicio();
+    renderPeriodoInicio();
+    verificarProximaMissa();
+  } else if (tela === 'tarefas') {
+    renderDiasNav();
+    renderTarefasDia();
+    document.getElementById('titulo-dia-sel').textContent = DIAS[diaSelecionado];
+  } else if (tela === 'tempos') {
+    renderApps();
+    renderPeriodos();
+    renderSelectApps();
+    renderAvisosApp();
+    renderPeriodosPB();
+    document.getElementById('toggle-guarda').checked = dados.config.guarda;
+  } else if (tela === 'missa') {
+    renderMissas();
+    document.getElementById('toggle-missa').checked = dados.config.missa;
+  } else if (tela === 'porticos') {
+    renderPórticos();
+  } else if (tela === 'lembretes') {
+    renderLembretes();
+  }
+}
+
+// ============================================================
+// SELETOR DE TEMPO ESTILO ROLETA
+// ============================================================
+class Roleta {
+  constructor(containerId, type, hiddenId, defaultVal) {
+    this.container = document.getElementById(containerId);
+    this.hiddenId = hiddenId;
+    this.type = type; // 'hora' ou 'minuto'
+    this.values = type === 'hora'
+      ? Array.from({length:24}, (_,i) => String(i).padStart(2,'0'))
+      : Array.from({length:60}, (_,i) => String(i).padStart(2,'0'));
+    this.current = parseInt(defaultVal) || 0;
+    this.startY = 0;
+    this.startOffset = 0;
+    this.offset = 0;
+    this.itemH = 40;
+    this.render();
+  }
+
+  render() {
+    if (!this.container) return;
+    const drum = document.createElement('div');
+    drum.className = 'roleta-drum';
+    drum.innerHTML = `<div class="roleta-selector"></div><div class="roleta-inner"></div>`;
+    this.inner = drum.querySelector('.roleta-inner');
+
+    // Preencher itens com padding
+    const pad = 3;
+    for (let i = -pad; i < this.values.length + pad; i++) {
+      const idx = ((i % this.values.length) + this.values.length) % this.values.length;
+      const div = document.createElement('div');
+      div.className = 'roleta-item';
+      div.textContent = this.values[idx];
+      this.inner.appendChild(div);
+    }
+    this.pad = pad;
+    this.updatePosition(false);
+
+    // Touch
+    drum.addEventListener('touchstart', e => {
+      this.startY = e.touches[0].clientY;
+      this.startOffset = this.current;
+      drum.style.cursor = 'grabbing';
+    }, {passive:true});
+    drum.addEventListener('touchmove', e => {
+      const dy = this.startY - e.touches[0].clientY;
+      const delta = Math.round(dy / this.itemH);
+      this.current = ((this.startOffset + delta) % this.values.length + this.values.length) % this.values.length;
+      this.updatePosition(true);
+      this.updateHidden();
+    }, {passive:true});
+    drum.addEventListener('touchend', () => { drum.style.cursor = 'grab'; });
+
+    // Mouse (desktop)
+    drum.addEventListener('mousedown', e => {
+      this.startY = e.clientY;
+      this.startOffset = this.current;
+      drum.style.cursor = 'grabbing';
+      const onMove = ev => {
+        const dy = this.startY - ev.clientY;
+        const delta = Math.round(dy / this.itemH);
+        this.current = ((this.startOffset + delta) % this.values.length + this.values.length) % this.values.length;
+        this.updatePosition(true);
+        this.updateHidden();
+      };
+      const onUp = () => {
+        drum.style.cursor = 'grab';
+        window.removeEventListener('mousemove', onMove);
+        window.removeEventListener('mouseup', onUp);
+      };
+      window.addEventListener('mousemove', onMove);
+      window.addEventListener('mouseup', onUp);
+    });
+
+    // Scroll
+    drum.addEventListener('wheel', e => {
+      e.preventDefault();
+      const delta = e.deltaY > 0 ? 1 : -1;
+      this.current = ((this.current + delta) % this.values.length + this.values.length) % this.values.length;
+      this.updatePosition(true);
+      this.updateHidden();
+    }, {passive:false});
+
+    this.container.appendChild(drum);
+    this.drum = drum;
+  }
+
+  updatePosition(animate) {
+    if (!this.inner) return;
+    const offset = -(this.current + this.pad) * this.itemH + (140/2) - this.itemH/2;
+    this.inner.style.transition = animate ? 'transform .15s ease' : 'none';
+    this.inner.style.transform = `translateY(${offset}px)`;
+    // Destacar item central
+    const items = this.inner.querySelectorAll('.roleta-item');
+    items.forEach((item, i) => {
+      item.classList.toggle('selecionado', i === this.current + this.pad);
+    });
+  }
+
+  updateHidden() {
+    const el = document.getElementById(this.hiddenId);
+    if (!el) return;
+    // Extrair hora e minuto do valor atual
+    const cur = el.value || '00:00';
+    const [h, m] = cur.split(':');
+    if (this.type === 'hora') el.value = this.values[this.current] + ':' + (m || '00');
+    else el.value = (h || '00') + ':' + this.values[this.current];
+  }
+
+  getValue() { return this.values[this.current]; }
+}
+
+function criarRoleta(containerId, hiddenId, defaultVal) {
+  const wrap = document.getElementById(containerId);
+  if (!wrap) return;
+  wrap.innerHTML = '';
+  // Hora
+  const rH = new Roleta(containerId + '_h', 'hora', hiddenId, parseInt((defaultVal||'00:00').split(':')[0]));
+  wrap.appendChild(rH.container || document.createElement('div'));
+
+  // separador
+  const sep = document.createElement('div');
+  sep.className = 'roleta-sep';
+  sep.textContent = ':';
+  wrap.appendChild(sep);
+
+  // Minuto
+  const rM = new Roleta(containerId + '_m', 'minuto', hiddenId, parseInt((defaultVal||'00:00').split(':')[1]));
+  wrap.appendChild(rM.container || document.createElement('div'));
+
+  // Criar os drums dentro do wrap com IDs
+  wrap.innerHTML = '';
+  const wrapH = document.createElement('div');
+  wrapH.id = containerId + '_h';
+  wrapH.className = 'roleta-col';
+  const labelH = document.createElement('div');
+  labelH.className = 'roleta-label';
+  labelH.textContent = 'Hora';
+  wrapH.appendChild(labelH);
+
+  const wrapM = document.createElement('div');
+  wrapM.id = containerId + '_m';
+  wrapM.className = 'roleta-col';
+  const labelM = document.createElement('div');
+  labelM.className = 'roleta-label';
+  labelM.textContent = 'Min';
+  wrapM.appendChild(labelM);
+
+  const sepEl = document.createElement('div');
+  sepEl.className = 'roleta-sep';
+  sepEl.textContent = ':';
+
+  wrap.appendChild(wrapH);
+  wrap.appendChild(sepEl);
+  wrap.appendChild(wrapM);
+
+  const [dH, dM] = (defaultVal || '08:00').split(':');
+
+  const roletaH = new Roleta(containerId + '_h', 'hora', hiddenId, parseInt(dH)||0);
+  const roletaM = new Roleta(containerId + '_m', 'minuto', hiddenId, parseInt(dM)||0);
+
+  // Sincronizar ambos no mesmo hidden
+  function syncHidden() {
+    const el = document.getElementById(hiddenId);
+    if (el) el.value = roletaH.getValue() + ':' + roletaM.getValue();
+  }
+  roletaH.updateHidden = syncHidden;
+  roletaM.updateHidden = syncHidden;
+  syncHidden();
+}
+
+// Inicializar todas as roletas quando modal abrir
+const _origAbrirModal = window.abrirModal;
+
+function initRoletas() {
+  criarRoleta('roleta-tarefa-hora',    'nova-tarefa-hora',    '08:00');
+  criarRoleta('roleta-missa-inicio',   'nova-missa-inicio',   '09:00');
+  criarRoleta('roleta-missa-fim',      'nova-missa-fim',      '10:00');
+  criarRoleta('roleta-periodo-inicio', 'novo-periodo-inicio', '08:00');
+  criarRoleta('roleta-periodo-fim',    'novo-periodo-fim',    '09:00');
+  criarRoleta('roleta-lembrete-hora',  'novo-lembrete-hora',  '08:00');
+  criarRoleta('roleta-pb-inicio',      'pb-inicio-val',       '22:00');
+  criarRoleta('roleta-pb-fim',         'pb-fim-val',          '06:00');
+}
+
+// ============================================================
+// MODO PRETO E BRANCO
+// ============================================================
+function salvarPeriodoPB() {
+  const inicio = document.getElementById('pb-inicio-val')?.value || '22:00';
+  const fim    = document.getElementById('pb-fim-val')?.value    || '06:00';
+  const diaSeg = document.getElementById('pb-dia-seguinte')?.checked || false;
+  const periodosPB = carregar('periodos_pb') || [];
+  periodosPB.push({ id: Date.now().toString(), inicio, fim, diaSeg });
+  salvar('periodos_pb', periodosPB);
+  renderPeriodosPB();
+}
+
+function removerPeriodoPB(id) {
+  let periodosPB = carregar('periodos_pb') || [];
+  periodosPB = periodosPB.filter(p => p.id !== id);
+  salvar('periodos_pb', periodosPB);
+  renderPeriodosPB();
+}
+
+function renderPeriodosPB() {
+  const lista = document.getElementById('lista-periodos-pb');
+  if (!lista) return;
+  const periodosPB = carregar('periodos_pb') || [];
+  if (!periodosPB.length) {
+    lista.innerHTML = '<div style="font-size:13px;color:var(--texto-sec);font-family:var(--font-corpo);">Nenhum período configurado.</div>';
+    return;
+  }
+  lista.innerHTML = periodosPB.map(p => `
+    <div class="bw-item">
+      <div style="font-size:20px;filter:grayscale(1);">🌙</div>
+      <div class="bw-info">
+        <div class="bw-nome">Preto e branco</div>
+        <div class="bw-horario">${p.inicio} – ${p.fim}${p.diaSeg ? ' (dia seguinte)' : ''}</div>
+      </div>
+      <button onclick="removerPeriodoPB('${p.id}')" style="background:transparent;border:none;color:var(--texto-ter);font-size:18px;cursor:pointer;">
+        <i class="ti ti-trash"></i>
+      </button>
+    </div>`).join('');
+}
+
+function verificarModoPB() {
+  const periodosPB = carregar('periodos_pb') || [];
+  if (!periodosPB.length) return;
+  const agora = new Date();
+  const hAtual = String(agora.getHours()).padStart(2,'0') + ':' + String(agora.getMinutes()).padStart(2,'0');
+  let ativo = false;
+  periodosPB.forEach(p => {
+    if (p.diaSeg) {
+      if (hAtual >= p.inicio || hAtual <= p.fim) ativo = true;
+    } else {
+      if (hAtual >= p.inicio && hAtual <= p.fim) ativo = true;
+    }
+  });
+  // Exibir lembrete se entrou no período
+  const jaAvisado = sessionStorage.getItem('pb_avisado_' + hAtual.replace(':',''));
+  if (ativo && !jaAvisado) {
+    sessionStorage.setItem('pb_avisado_' + hAtual.replace(':',''), '1');
+    document.getElementById('lembrete-msg-exib').textContent =
+      'Ative o modo preto e branco no seu celular para reduzir os estímulos visuais neste período.';
+    document.getElementById('lembrete-hora-exib').textContent = '🖤 Modo preto e branco';
+    document.getElementById('lembrete-overlay').classList.add('aberto');
+  }
+}
+
+// Adicionar hidden inputs para roletas PB na tela de tempos (criados dinamicamente)
+function iniciarHiddensPB() {
+  ['pb-inicio-val','pb-fim-val'].forEach(id => {
+    if (!document.getElementById(id)) {
+      const el = document.createElement('input');
+      el.type = 'hidden';
+      el.id = id;
+      el.value = id.includes('inicio') ? '22:00' : '06:00';
+      document.body.appendChild(el);
+    }
+  });
+}
+
+// ============================================================
+// AVISOS DE TEMPO POR APLICATIVO
+// ============================================================
+function renderSelectApps() {
+  const sel = document.getElementById('aviso-app-sel');
+  if (!sel) return;
+  if (!dados.apps.length) {
+    sel.innerHTML = '<option value="">— Adicione apps primeiro —</option>';
+    return;
+  }
+  sel.innerHTML = dados.apps.map(a =>
+    `<option value="${a.id}">${a.nome}</option>`
+  ).join('');
+}
+
+function renderAvisosApp() {
+  const lista = document.getElementById('lista-avisos-tempo');
+  if (!lista) return;
+  const avisos = carregar('avisos_tempo') || [];
+  if (!avisos.length) {
+    lista.innerHTML = '<div style="font-size:13px;color:var(--texto-sec);font-family:var(--font-corpo);">Nenhum aviso configurado.</div>';
+    return;
+  }
+  lista.innerHTML = avisos.map(av => {
+    const app = dados.apps.find(a => a.id === av.appId);
+    const nomeApp = app ? app.nome : '?';
+    const tipoTxt = av.tipo === 'decorrido'
+      ? `Após ${av.minutos} min de uso`
+      : `Quando faltar ${av.minutos} min`;
+    return `<div class="aviso-item">
+      <span class="aviso-tempo-badge">${nomeApp}</span>
+      <div style="flex:1;">
+        <div style="font-size:12px;color:var(--dourado);font-family:var(--font-titulo);letter-spacing:.04em;">${tipoTxt}</div>
+        ${av.msg ? `<div class="aviso-msg-txt">"${av.msg}"</div>` : ''}
+      </div>
+      <button onclick="removerAvisoTempo('${av.id}')" style="background:transparent;border:none;color:var(--texto-ter);font-size:18px;cursor:pointer;">
+        <i class="ti ti-trash"></i>
+      </button>
+    </div>`;
+  }).join('');
+}
+
+function salvarAvisoTempo() {
+  const appId = document.getElementById('aviso-app-sel').value;
+  const tipo = document.getElementById('aviso-tipo-sel').value;
+  const minutos = parseInt(document.getElementById('aviso-minutos').value);
+  const msg = document.getElementById('aviso-msg').value.trim();
+  if (!appId || !minutos || isNaN(minutos)) {
+    alert('Por favor, selecione o aplicativo e os minutos.');
+    return;
+  }
+  const avisos = carregar('avisos_tempo') || [];
+  avisos.push({ id: Date.now().toString(), appId, tipo, minutos, msg });
+  salvar('avisos_tempo', avisos);
+  document.getElementById('aviso-minutos').value = '';
+  document.getElementById('aviso-msg').value = '';
+  renderAvisosApp();
+  alert('Aviso configurado! Ele aparecerá na tela quando a condição for atingida.');
+}
+
+function removerAvisoTempo(id) {
+  let avisos = carregar('avisos_tempo') || [];
+  avisos = avisos.filter(a => a.id !== id);
+  salvar('avisos_tempo', avisos);
+  renderAvisosApp();
+}
+
+function verificarAvisosTempoAtivos() {
+  const avisos = carregar('avisos_tempo') || [];
+  if (!avisos.length) return;
+  const disparados = carregar('avisos_disparados_hoje') || {};
+  avisos.forEach(av => {
+    const app = dados.apps.find(a => a.id === av.appId);
+    if (!app) return;
+    const usado = app.usado || 0;
+    const limite = app.limite;
+    const faltando = Math.max(0, limite - usado);
+    let disparar = false;
+    if (av.tipo === 'decorrido' && usado >= av.minutos) disparar = true;
+    if (av.tipo === 'faltando' && faltando <= av.minutos && usado > 0) disparar = true;
+    const chave = av.id + '_' + Math.floor(usado / 5);
+    if (disparar && !disparados[chave]) {
+      disparados[chave] = true;
+      salvar('avisos_disparados_hoje', disparados);
+      // Montar mensagem
+      const nomeApp = app.nome;
+      let msgExib = av.msg
+        ? `"${av.msg}"`
+        : av.tipo === 'decorrido'
+          ? `Já passaram ${av.minutos} minutos em ${nomeApp}.`
+          : `Faltam apenas ${av.minutos} minutos do seu tempo em ${nomeApp}.`;
+      // Reutilizar overlay de lembrete
+      document.getElementById('lembrete-msg-exib').textContent = msgExib;
+      document.getElementById('lembrete-hora-exib').textContent =
+        `⏱ Aviso de tempo — ${nomeApp}`;
+      document.getElementById('lembrete-overlay').classList.add('aberto');
+      // Som suave
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.frequency.value = 660;
+        osc.type = 'sine';
+        gain.gain.setValueAtTime(.25, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(.001, ctx.currentTime + .6);
+        osc.start(); osc.stop(ctx.currentTime + .6);
+      } catch(e) {}
+      if (navigator.vibrate) navigator.vibrate([150, 80, 150]);
+    }
+  });
+}
+
+// ============================================================
+// LEMBRETES PROGRAMADOS
+// ============================================================
+function renderLembretes() {
+  const lista = document.getElementById('lista-lembretes');
+  const lembretes = carregar('lembretes') || [];
+  if (!lembretes.length) {
+    lista.innerHTML = '<div style="font-size:13px;color:var(--texto-sec);font-family:var(--font-corpo);">Nenhum lembrete programado ainda.</div>';
+    return;
+  }
+  lista.innerHTML = lembretes.map(l => `
+    <div class="card" style="margin-bottom:8px;">
+      <div style="display:flex;align-items:flex-start;gap:10px;">
+        <div style="font-size:20px;flex-shrink:0;">⚜</div>
+        <div style="flex:1;">
+          <div style="font-size:15px;color:var(--dourado-claro);font-family:var(--font-corpo);font-style:italic;line-height:1.4;">${l.msg}</div>
+          <div style="font-size:11px;color:var(--texto-ter);font-family:var(--font-corpo);margin-top:4px;">${DIAS[l.dia]} às ${l.hora} · ${l.som ? '🔔 Som ativo' : '🔕 Silencioso'}</div>
+        </div>
+        <button onclick="removerLembrete('${l.id}')" style="background:transparent;border:none;color:var(--texto-ter);font-size:18px;cursor:pointer;">
+          <i class="ti ti-trash"></i>
+        </button>
+      </div>
+    </div>`).join('');
+}
+
+function salvarLembrete() {
+  const msg = document.getElementById('novo-lembrete-msg').value.trim();
+  const dia = parseInt(document.getElementById('novo-lembrete-dia').value);
+  const hora = document.getElementById('novo-lembrete-hora').value;
+  const som = document.getElementById('novo-lembrete-som').checked;
+  if (!msg || !hora) { alert('Por favor, preencha a mensagem e o horário.'); return; }
+  const lembretes = carregar('lembretes') || [];
+  lembretes.push({ id: Date.now().toString(), msg, dia, hora, som });
+  salvar('lembretes', lembretes);
+  document.getElementById('novo-lembrete-msg').value = '';
+  renderLembretes();
+  alert('Lembrete programado com sucesso!');
+}
+
+function removerLembrete(id) {
+  let lembretes = carregar('lembretes') || [];
+  lembretes = lembretes.filter(l => l.id !== id);
+  salvar('lembretes', lembretes);
+  renderLembretes();
+}
+
+function fecharLembrete() {
+  document.getElementById('lembrete-overlay').classList.remove('aberto');
+}
+
+function verificarLembretes() {
+  const lembretes = carregar('lembretes') || [];
+  if (!lembretes.length) return;
+  const agora = new Date();
+  const diaSemana = agora.getDay();
+  const horaAtual = String(agora.getHours()).padStart(2,'0') + ':' + String(agora.getMinutes()).padStart(2,'0');
+  const disparados = carregar('lembretes_disparados') || [];
+
+  lembretes.forEach(l => {
+    const chave = l.id + '_' + diaSemana + '_' + horaAtual.replace(':','');
+    if (l.dia == diaSemana && l.hora === horaAtual && !disparados.includes(chave)) {
+      // Disparar lembrete
+      document.getElementById('lembrete-msg-exib').textContent = l.msg;
+      document.getElementById('lembrete-hora-exib').textContent = DIAS[l.dia] + ' · ' + l.hora;
+      document.getElementById('lembrete-overlay').classList.add('aberto');
+      // Som
+      if (l.som) {
+        try {
+          const ctx = new (window.AudioContext || window.webkitAudioContext)();
+          [0, 200, 400].forEach(delay => {
+            setTimeout(() => {
+              const osc = ctx.createOscillator();
+              const gain = ctx.createGain();
+              osc.connect(gain); gain.connect(ctx.destination);
+              osc.frequency.value = 880;
+              osc.type = 'sine';
+              gain.gain.setValueAtTime(.3, ctx.currentTime);
+              gain.gain.exponentialRampToValueAtTime(.001, ctx.currentTime + .4);
+              osc.start(); osc.stop(ctx.currentTime + .4);
+            }, delay);
+          });
+        } catch(e) {}
+        // Vibração
+        if (navigator.vibrate) navigator.vibrate([200, 100, 200, 100, 400]);
+      }
+      // Registrar disparado
+      disparados.push(chave);
+      salvar('lembretes_disparados', disparados.slice(-100));
+    }
+  });
+}
+
+// ============================================================
+// FUNDO FLORES DE LIS — emoji ⚜ em canvas
+// ============================================================
+function desenharFundoLis() {
+  const div = document.getElementById('fundo-lis');
+  const canvas = document.createElement('canvas');
+  div.appendChild(canvas);
+
+  function render() {
+    const W = div.offsetWidth || window.innerWidth;
+    const H = window.innerHeight;
+    canvas.width = W;
+    canvas.height = H;
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, W, H);
+
+    const size = 42;
+    const colGap = 72;
+    const rowGap = 88;
+    ctx.font = size + 'px serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = '#c9a84c';
+
+    const cols = Math.ceil(W / colGap) + 1;
+    const rows = Math.ceil(H / rowGap) + 1;
+
+    for (let r = 0; r < rows; r++) {
+      const offset = (r % 2 === 0) ? 0 : colGap / 2;
+      for (let c = 0; c < cols; c++) {
+        const x = c * colGap + offset;
+        const y = r * rowGap + rowGap / 2;
+        ctx.fillText('⚜', x, y);
+      }
+    }
+  }
+
+  render();
+  window.addEventListener('resize', render);
+}
+
+// ============================================================
+// INICIALIZAÇÃO
+// ============================================================
+function init() {
+  carregarInfoDia();
+  desenharFundoLis();
+  iniciarHiddensPB();
+  setTimeout(initRoletas, 100);
+  renderizar('inicio');
+  // Verificar missas e lembretes a cada minuto
+  setInterval(() => {
+    verificarProximaMissa();
+    verificarLembretes();
+    verificarAvisosTempoAtivos();
+    verificarModoPB();
+  }, 60000);
+  verificarLembretes();
+  verificarAvisosTempoAtivos();
+}
+
+init();
+</script>
+</body>
+</html>
